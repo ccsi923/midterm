@@ -12,18 +12,20 @@ public class AccountDto {
 
     @NotNull
     private BigDecimal amount;
-    @NotNull
+    @Valid
     private String secretKey;
 
     @Valid
     private AccountHolder primaryOwner;
     @Valid
     private AccountHolder secondaryOwner;
-
+    @Valid
     private BigDecimal minimumBalance;
-
+    @Valid
     private BigDecimal monthlyMaintenanceFee;
+    @Valid
     private BigDecimal interestRate;
+    @Valid
     private BigDecimal creditLimit;
 
     //private Status status; -->Status Active when you create one

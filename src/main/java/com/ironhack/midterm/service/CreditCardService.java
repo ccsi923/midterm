@@ -80,7 +80,7 @@ public class CreditCardService {
         }
 
         if (accountDto.getCreditLimit() == null){
-            LOGGER.debug("InterestRate -> 0.0025");
+            LOGGER.debug("Credit Limit -> 100");
             accountDto.setCreditLimit(new BigDecimal("100"));
         }
         if ( (accountDto.getCreditLimit().compareTo(new BigDecimal("100")) < 0 ) || (accountDto.getCreditLimit().compareTo(new BigDecimal("100000")) > 0 )){
@@ -89,9 +89,9 @@ public class CreditCardService {
         }
         if (accountDto.getInterestRate() == null){
             LOGGER.debug("Minimum Balance -> 1000");
-            accountDto.setMinimumBalance(new BigDecimal("0.2"));
+            accountDto.setInterestRate(new BigDecimal("0.2"));
         }
-        if(accountDto.getInterestRate().compareTo(new BigDecimal("0.1")) < 0){
+        if( (accountDto.getInterestRate().compareTo(new BigDecimal("0.1")) < 0) || (accountDto.getInterestRate().compareTo(new BigDecimal("0.2")) > 0) ){
             LOGGER.error("Interest Rate can't be under 0.1");
             throw new WrongInput("Interest Rate can't be under 0.1");
         }

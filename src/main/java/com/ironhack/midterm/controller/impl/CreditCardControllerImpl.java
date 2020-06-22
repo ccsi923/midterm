@@ -18,13 +18,13 @@ public class CreditCardControllerImpl implements CreditCardController {
     @Autowired
     private CreditCardService creditCardService;
 
-    @GetMapping("/credicards")
+    @GetMapping("/creditcards")
     @ResponseStatus(HttpStatus.OK)
     public List<CreditCardMV> findAll(){
         return creditCardService.findAll();
     }
 
-    @PostMapping("/creditcard")
+    @PostMapping("/creditcard/")
     @ResponseStatus(HttpStatus.CREATED)
     private CreditCardMV create(@RequestParam(value = "primary", defaultValue = "-1", required = false) Integer primaryId,
                                 @RequestParam(value = "secondary", defaultValue = "-1", required = false) Integer secondaryId,
