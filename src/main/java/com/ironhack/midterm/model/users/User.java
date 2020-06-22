@@ -1,13 +1,11 @@
 package com.ironhack.midterm.model.users;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 @Entity
 @Table
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class User {
 
     @Id

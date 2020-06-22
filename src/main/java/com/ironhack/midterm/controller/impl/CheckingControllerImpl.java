@@ -25,6 +25,8 @@ public class CheckingControllerImpl implements CheckingController {
         return checkingService.findAll();
     }
 
+    //@PostMapping("/")
+
     @PostMapping("/checking/")
     @ResponseStatus(HttpStatus.CREATED)
     private CheckingMV create(@RequestParam(value = "primary", defaultValue = "-1", required = false) Integer primaryId,

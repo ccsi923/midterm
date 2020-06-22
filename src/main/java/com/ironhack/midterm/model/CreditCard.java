@@ -1,6 +1,8 @@
 package com.ironhack.midterm.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ironhack.midterm.dto.AccessAccountDTO;
+import com.ironhack.midterm.dto.AccountAdminAccess;
 import com.ironhack.midterm.model.users.AccountHolder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,47 +19,26 @@ import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table
-public class CreditCard {
+public class CreditCard extends Account {
 
     private static final Logger LOGGER = LogManager.getLogger(CreditCard.class);
 
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @NotNull
-    @Embedded
-    private Money balance;
-
-    @NotNull
-    @ManyToOne
-    @JsonIgnore
-    private AccountHolder primaryOwner;
-
-    @ManyToOne
-    @JsonIgnore
-    private AccountHolder secondaryOwner;
-
     private BigDecimal creditLimit;
     private BigDecimal interestRate;
-    private BigDecimal penaltyFee;
+
     private LocalDateTime updateDate;
 
 
     public CreditCard(){}
 
-    public CreditCard(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit, BigDecimal interestRate, BigDecimal penaltyFee) {
-        this.balance = balance;
-        this.primaryOwner = primaryOwner;
-        this.secondaryOwner = secondaryOwner;
+    public CreditCard(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner,
+                      BigDecimal penaltyFee, BigDecimal creditLimit, BigDecimal interestRate) {
+        super(balance, primaryOwner, secondaryOwner, penaltyFee);
         this.creditLimit = creditLimit;
         this.interestRate = interestRate;
-        this.penaltyFee = penaltyFee;
         this.updateDate = LocalDateTime.now();
-
-
     }
+
 
     public Integer getId() {
         return id;
@@ -123,9 +104,9 @@ public class CreditCard {
         this.updateDate = updateDate;
     }
 
-    public void check(CreditCard creditCard){
+    public void check(){
 
-        int months =  (int) creditCard.getUpdateDate().until(LocalDateTime.now(), ChronoUnit.MONTHS);
+        int months =  (int) updateDate.until(LocalDateTime.now(), ChronoUnit.MONTHS);
 
         if(months > 0){
             BigDecimal addValue = balance.getAmount()

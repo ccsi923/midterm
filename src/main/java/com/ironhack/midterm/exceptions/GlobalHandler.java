@@ -11,7 +11,12 @@ import java.io.IOException;
 public class GlobalHandler {
 
     @ExceptionHandler(WrongInput.class)
-    public void handDataNotFoundException(WrongInput e, HttpServletResponse response) throws IOException {
+    public void handWrongInput(WrongInput e, HttpServletResponse response) throws IOException {
+        response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(NotEnoughFunds.class)
+    public void handNotEnoughFunds(WrongInput e, HttpServletResponse response) throws IOException {
         response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
     }
 }

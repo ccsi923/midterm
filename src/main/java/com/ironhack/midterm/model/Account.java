@@ -5,9 +5,13 @@ import com.ironhack.midterm.enums.Status;
 import com.ironhack.midterm.model.users.AccountHolder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -20,7 +24,7 @@ public abstract class Account {
 
     @Embedded
     protected Money balance;
-    protected String secretKey;
+
 
     @ManyToOne
     @JsonIgnore
@@ -31,18 +35,17 @@ public abstract class Account {
     protected AccountHolder secondaryOwner;
 
     protected BigDecimal penaltyFee;
-    @Enumerated(value = EnumType.STRING)
-    protected Status status;
+
+
 
     public Account(){}
 
-    public Account(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal penaltyFee, Status status) {
+    public Account(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal penaltyFee) {
         this.balance = balance;
-        this.secretKey = secretKey;
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
         this.penaltyFee = penaltyFee;
-        this.status = status;
+
     }
 
     public Integer getId() {
@@ -61,13 +64,6 @@ public abstract class Account {
         this.balance = balance;
     }
 
-    public String getSecretKey() {
-        return secretKey;
-    }
-
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
-    }
 
     public AccountHolder getPrimaryOwner() {
         return primaryOwner;
@@ -93,11 +89,4 @@ public abstract class Account {
         this.penaltyFee = penaltyFee;
     }
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
 }

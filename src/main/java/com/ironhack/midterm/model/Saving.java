@@ -7,6 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,6 +26,11 @@ public class Saving extends Account{
     private BigDecimal minimumBalance;
     private BigDecimal interestRate;
     private LocalDateTime referenceDate;
+    private boolean penalty;
+    private String secretKey;
+    @Enumerated(value = EnumType.STRING)
+    private Status status;
+
 
     public Saving() {
     }
@@ -31,11 +38,14 @@ public class Saving extends Account{
     public Saving(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner,
                   BigDecimal penaltyFee, Status status, BigDecimal minimumBalance, BigDecimal interestRate) {
 
-        super(balance, secretKey, primaryOwner, secondaryOwner, penaltyFee, status);
+        super(balance, primaryOwner, secondaryOwner, penaltyFee);
 
         this.minimumBalance = minimumBalance;
         this.interestRate = interestRate;
         this.referenceDate = LocalDateTime.now();
+        this.penalty = false;
+        this.status = status;
+        this.secretKey = secretKey;
     }
 
     public BigDecimal getMinimumBalance() {
@@ -62,8 +72,31 @@ public class Saving extends Account{
         this.referenceDate = referenceDate;
     }
 
+    public boolean isPenalty() {
+        return penalty;
+    }
 
-    public void check(Saving saving) {
+    public void setPenalty(boolean penalty) {
+        this.penalty = penalty;
+    }
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public void check() {
 
         if (balance.getAmount().compareTo(minimumBalance) < 0) {
             balance.decreaseAmount(getPenaltyFee());

@@ -2,7 +2,9 @@ package com.ironhack.midterm.service;
 
 import com.ironhack.midterm.dto.CreditCardMV;
 import com.ironhack.midterm.dto.StudentCheckingMV;
+import com.ironhack.midterm.repository.RoleRepository;
 import com.ironhack.midterm.repository.StudentCheckingRepository;
+import com.ironhack.midterm.repository.UserRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,12 @@ public class StudentCheckingService {
 
     @Autowired
     private StudentCheckingRepository studentCheckingRepository;
+
+    @Autowired
+    private UserRepository userRepo;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
 
     public List<StudentCheckingMV> findAll(){

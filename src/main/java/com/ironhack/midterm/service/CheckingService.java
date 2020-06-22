@@ -10,13 +10,15 @@ import com.ironhack.midterm.model.Checking;
 import com.ironhack.midterm.model.CreditCard;
 import com.ironhack.midterm.model.Money;
 import com.ironhack.midterm.model.StudentChecking;
-import com.ironhack.midterm.repository.AccountHolderRepository;
-import com.ironhack.midterm.repository.CheckingReposiroty;
-import com.ironhack.midterm.repository.CreditCardRepository;
-import com.ironhack.midterm.repository.StudentCheckingRepository;
+import com.ironhack.midterm.model.users.AccountUser;
+import com.ironhack.midterm.model.users.Role;
+import com.ironhack.midterm.model.users.ThirdParty;
+import com.ironhack.midterm.repository.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -39,6 +41,12 @@ public class CheckingService {
 
     @Autowired
     private AccountHolderRepository accountHolderRepository;
+
+    @Autowired
+    private UserRepository userRepo;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     public List<CheckingMV> findAll(){
         LOGGER.info("[INIT] - findAll");
@@ -75,6 +83,12 @@ public class CheckingService {
         if (primaryId == -1) {
             if (accountDto.getPrimaryOwner() != null) {
                 accountHolderRepository.save(accountDto.getPrimaryOwner());
+                PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                AccountUser newUser = new AccountUser(accountDto.getPrimaryOwner().getName(),passwordEncoder.encode(accountDto.getPrimaryOwner().getPassword()));
+                userRepo.save(newUser);
+                Role role = new Role("ROLE_ACCOUNTHOLDER",newUser);
+                roleRepository.save(role);
+
             } else {
                 LOGGER.error("You must give a Parimary Account Holder");
                 throw new WrongInput("You must give a Parimary Account Holder");
@@ -83,7 +97,12 @@ public class CheckingService {
 
         if (secondaryId == -1) {
             if (accountDto.getSecondaryOwner() != null) {
-                accountHolderRepository.save(accountDto.getPrimaryOwner());
+                accountHolderRepository.save(accountDto.getSecondaryOwner());
+                PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                AccountUser newUser = new AccountUser(accountDto.getSecondaryOwner().getName(),passwordEncoder.encode(accountDto.getSecondaryOwner().getPassword()));
+                userRepo.save(newUser);
+                Role role = new Role("ROLE_ACCOUNTHOLDER",newUser);
+                roleRepository.save(role);
             }
         }
 

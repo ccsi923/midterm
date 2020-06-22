@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class SavingMV {
 
+    private Integer id;
     private Money balance;
     private AccountHolder primaryOwner;
     private AccountHolder secondaryOwner = null;

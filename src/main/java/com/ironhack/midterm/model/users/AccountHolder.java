@@ -27,6 +27,8 @@ public class AccountHolder {
     private String name;
     @NotNull
     private LocalDate birth;
+    @NotNull
+    private String password;
 
     @Valid
     @NotNull
@@ -64,12 +66,22 @@ public class AccountHolder {
         this.login = false;
     }
 
-    public AccountHolder(@NotNull String name, @NotNull LocalDate birth, @NotNull Address primaryAddress, Address mailingAddress) {
+    public AccountHolder(@NotNull String name, @NotNull LocalDate birth, @NotNull String password,  @NotNull Address primaryAddress, Address mailingAddress) {
         this.name = name;
         this.birth = birth;
         this.primaryAddress = primaryAddress;
         this.mailingAddress = mailingAddress;
         this.login = false;
+        this.password = password;
+    }
+
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getName() {

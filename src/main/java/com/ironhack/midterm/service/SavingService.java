@@ -6,14 +6,23 @@ import com.ironhack.midterm.enums.Status;
 import com.ironhack.midterm.exceptions.WrongInput;
 import com.ironhack.midterm.model.Money;
 import com.ironhack.midterm.model.Saving;
+import com.ironhack.midterm.model.users.AccountUser;
+import com.ironhack.midterm.model.users.Role;
+import com.ironhack.midterm.model.users.User;
 import com.ironhack.midterm.repository.AccountHolderRepository;
+import com.ironhack.midterm.repository.RoleRepository;
 import com.ironhack.midterm.repository.SavingRepository;
+import com.ironhack.midterm.repository.UserRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,10 +39,17 @@ public class SavingService {
     @Autowired
     private AccountHolderRepository accountHolderRepository;
 
+    @Autowired
+    private UserRepository userRepo;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Secured({"ROLE_ADMIN"})
     public List<SavingMV> findAll(){
         LOGGER.info("[INIT] - findAll");
         List<SavingMV> savingMVS = savingRepository.findAll().stream().map(
-                saving -> new SavingMV(saving.getBalance(), saving.getPrimaryOwner(), saving.getSecondaryOwner(),
+                saving -> new SavingMV(saving.getId(),saving.getBalance(), saving.getPrimaryOwner(), saving.getSecondaryOwner(),
                         saving.getPenaltyFee(), saving.getInterestRate(), saving.getStatus(), saving.getInterestRate())
         ).collect(Collectors.toList());
         LOGGER.info("[END] - findAll");
@@ -64,6 +80,11 @@ public class SavingService {
         if (primaryId == -1){
              if (accountDto.getPrimaryOwner() != null) {
                  accountHolderRepository.save(accountDto.getPrimaryOwner());
+                 PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                 AccountUser newUser = new AccountUser(accountDto.getPrimaryOwner().getName(),passwordEncoder.encode(accountDto.getPrimaryOwner().getPassword()));
+                 userRepo.save(newUser);
+                 Role role = new Role("ROLE_ACCOUNTHOLDER",newUser);
+                 roleRepository.save(role);
              } else {
                  LOGGER.error("You must give a Parimary Account Holder" );
                  throw new WrongInput("You must give a Parimary Account Holder");
@@ -72,13 +93,19 @@ public class SavingService {
 
         if(secondaryId == -1){
             if (accountDto.getSecondaryOwner() != null){
-                accountHolderRepository.save(accountDto.getPrimaryOwner());
+                accountHolderRepository.save(accountDto.getSecondaryOwner());
+                PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                AccountUser newUser = new AccountUser(accountDto.getSecondaryOwner().getName(),passwordEncoder.encode(accountDto.getSecondaryOwner().getPassword()));
+                userRepo.save(newUser);
+                Role role = new Role("ROLE_ACCOUNTHOLDER",newUser);
+                roleRepository.save(role);
+
             }
         }
 
         if (accountDto.getInterestRate() == null){
             LOGGER.debug("InterestRate -> 0.0025");
-            accountDto.setInterestRate(new BigDecimal("0.0025"));
+            accountDto.setInterestRate(new BigDecimal("0.0025").setScale(4, RoundingMode.HALF_EVEN));
         }
         if (accountDto.getInterestRate().compareTo(new BigDecimal("0.5")) > 0){
             LOGGER.error("Interest Rate must be under 0.5");
@@ -99,7 +126,7 @@ public class SavingService {
         savingRepository.save(saving);
         LOGGER.info("[END] - create");
 
-        return new SavingMV(saving.getBalance(), saving.getPrimaryOwner(), saving.getSecondaryOwner(),saving.getMinimumBalance(), saving.getPenaltyFee(),
+        return new SavingMV(saving.getId(), saving.getBalance(), saving.getPrimaryOwner(), saving.getSecondaryOwner(),saving.getMinimumBalance(), saving.getPenaltyFee(),
                     saving.getStatus(), saving.getInterestRate());
     }
 }
