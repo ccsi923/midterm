@@ -26,6 +26,7 @@ public class Checking extends Account {
     private String secretKey;
     @Enumerated(value = EnumType.STRING)
     private Status status;
+    private boolean penalty;
 
     public Checking(){}
 
@@ -38,6 +39,7 @@ public class Checking extends Account {
         this.minimumBalance = minimumBalance;
         this.monthlyMaintenanceFee = monthlyMaintenanceFee;
         this.status = status;
+        this.penalty = false;
     }
 
     public String getSecretKey() {
@@ -72,12 +74,12 @@ public class Checking extends Account {
         this.monthlyMaintenanceFee = monthlyMaintenanceFee;
     }
 
-    public void check(Checking checking){
-
-        if (balance.getAmount().compareTo(minimumBalance) < 0) {
-            balance.decreaseAmount(getPenaltyFee());
-            LOGGER.info("[INFO] - amount less than "+ minimumBalance +". Penalty reduced");
-        }
-
+    public boolean isPenalty() {
+        return penalty;
     }
+
+    public void setPenalty(boolean penalty) {
+        this.penalty = penalty;
+    }
+
 }

@@ -7,27 +7,21 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 
-public class UserDTO {
+public class UserRequest {
 
     @NotNull
     private String userName;
     @NotNull
     private String password;
-    @Valid
-    private String haskey;
 
-    private UserDTO(){}
 
-    public UserDTO(@NotNull String userName, @NotNull String password) {
+    private UserRequest(){}
+
+    public UserRequest(@NotNull String userName, @NotNull String password) {
         this.userName = userName;
         this.password = password;
     }
 
-    public UserDTO(@NotNull String userName, @NotNull String password, @Valid String haskey) {
-        this.userName = userName;
-        this.password = password;
-        this.haskey = haskey;
-    }
 
     public String getUserName() {
         return userName;
@@ -45,11 +39,4 @@ public class UserDTO {
         this.password = password;
     }
 
-    public String getHaskey() {
-        return haskey;
-    }
-
-    public void setHaskey(String haskey) {
-        this.haskey = haskey;
-    }
 }

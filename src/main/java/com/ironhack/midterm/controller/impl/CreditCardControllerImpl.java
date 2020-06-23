@@ -1,9 +1,8 @@
 package com.ironhack.midterm.controller.impl;
 
 import com.ironhack.midterm.controller.interfaces.CreditCardController;
-import com.ironhack.midterm.dto.AccountDto;
+import com.ironhack.midterm.dto.AccountRequest;
 import com.ironhack.midterm.dto.CreditCardMV;
-import com.ironhack.midterm.dto.SavingMV;
 import com.ironhack.midterm.service.CreditCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,9 +27,9 @@ public class CreditCardControllerImpl implements CreditCardController {
     @ResponseStatus(HttpStatus.CREATED)
     private CreditCardMV create(@RequestParam(value = "primary", defaultValue = "-1", required = false) Integer primaryId,
                                 @RequestParam(value = "secondary", defaultValue = "-1", required = false) Integer secondaryId,
-                                @RequestBody @Valid AccountDto accountDto){
+                                @RequestBody @Valid AccountRequest accountRequest){
 
-        return creditCardService.create(primaryId, secondaryId, accountDto);
+        return creditCardService.create(primaryId, secondaryId, accountRequest);
     }
 
 

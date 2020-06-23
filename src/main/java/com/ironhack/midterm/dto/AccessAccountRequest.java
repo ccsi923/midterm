@@ -2,7 +2,7 @@ package com.ironhack.midterm.dto;
 
 import javax.validation.constraints.NotNull;
 
-public class AccessAccountDTO {
+public class AccessAccountRequest {
 
     @NotNull
     private Integer id;

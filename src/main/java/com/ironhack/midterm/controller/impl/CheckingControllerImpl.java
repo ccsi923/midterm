@@ -1,11 +1,9 @@
 package com.ironhack.midterm.controller.impl;
 
 import com.ironhack.midterm.controller.interfaces.CheckingController;
-import com.ironhack.midterm.dto.AccountDto;
+import com.ironhack.midterm.dto.AccountRequest;
 import com.ironhack.midterm.dto.CheckingMV;
-import com.ironhack.midterm.dto.CreditCardMV;
 import com.ironhack.midterm.service.CheckingService;
-import com.ironhack.midterm.service.CreditCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -31,9 +29,9 @@ public class CheckingControllerImpl implements CheckingController {
     @ResponseStatus(HttpStatus.CREATED)
     private CheckingMV create(@RequestParam(value = "primary", defaultValue = "-1", required = false) Integer primaryId,
                                 @RequestParam(value = "secondary", defaultValue = "-1", required = false) Integer secondaryId,
-                                @RequestBody @Valid AccountDto accountDto){
+                                @RequestBody @Valid AccountRequest accountRequest){
 
-        return checkingService.create(primaryId, secondaryId, accountDto);
+        return checkingService.create(primaryId, secondaryId, accountRequest);
     }
 
 }

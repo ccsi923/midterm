@@ -39,6 +39,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     httpSecurity.httpBasic();
     httpSecurity.authorizeRequests().antMatchers(HttpMethod.POST, "/user/thirdparty").hasAuthority("ROLE_ADMIN")
+            .antMatchers(HttpMethod.POST, "/debit/thirdparty").hasAuthority("ROLE_THIRDPARTY")
+            .antMatchers(HttpMethod.POST, "/credit/thirdparty").hasAuthority("ROLE_THIRDPARTY")
             //.antMatchers(HttpMethod.GET, "/users").hasAuthority("ROLE_ADMIN")
             .antMatchers("/^((?!resources/**).)*$").hasAuthority("ROLE_ADMIN")
             //.antMatchers("/", "/resources/**").permitAll()

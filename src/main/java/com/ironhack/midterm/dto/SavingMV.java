@@ -9,7 +9,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-@AllArgsConstructor
+
 public class SavingMV {
 
     private Integer id;
@@ -20,6 +20,19 @@ public class SavingMV {
     private BigDecimal penaltyBalance;
     private Status status;
     private BigDecimal interestRate;
+    private boolean penalty;
 
-
+    public SavingMV(Integer id, Money balance, AccountHolder primaryOwner,
+                    AccountHolder secondaryOwner, BigDecimal minimumBalance,
+                    BigDecimal penaltyBalance, Status status, BigDecimal interestRate, boolean penalty) {
+        this.id = id;
+        this.balance = balance;
+        this.primaryOwner = primaryOwner;
+        this.secondaryOwner = secondaryOwner;
+        this.minimumBalance = minimumBalance;
+        this.penaltyBalance = penaltyBalance;
+        this.status = status;
+        this.interestRate = interestRate;
+        this.penalty = penalty;
+    }
 }

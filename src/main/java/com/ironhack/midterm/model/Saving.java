@@ -98,11 +98,6 @@ public class Saving extends Account{
 
     public void check() {
 
-        if (balance.getAmount().compareTo(minimumBalance) < 0) {
-            balance.decreaseAmount(getPenaltyFee());
-            LOGGER.info("[INFO] - amount less than 250. Penalty reduced");
-        }
-
         int years = (int) referenceDate.until(LocalDateTime.now(), ChronoUnit.YEARS);
 
         if ( years >= 0) {

@@ -1,20 +1,12 @@
 package com.ironhack.midterm.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ironhack.midterm.dto.AccessAccountDTO;
-import com.ironhack.midterm.dto.AccountAdminAccess;
 import com.ironhack.midterm.model.users.AccountHolder;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
 
 @Entity

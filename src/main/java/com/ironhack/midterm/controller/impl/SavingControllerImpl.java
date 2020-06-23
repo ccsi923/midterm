@@ -1,9 +1,8 @@
 package com.ironhack.midterm.controller.impl;
 
 import com.ironhack.midterm.controller.interfaces.SavingController;
-import com.ironhack.midterm.dto.AccountDto;
+import com.ironhack.midterm.dto.AccountRequest;
 import com.ironhack.midterm.dto.SavingMV;
-import com.ironhack.midterm.model.Saving;
 import com.ironhack.midterm.service.SavingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,9 +27,9 @@ public class SavingControllerImpl implements SavingController {
     @ResponseStatus(HttpStatus.CREATED)
     private SavingMV create(@RequestParam(value = "primary", defaultValue = "-1", required = false) Integer primaryId,
                           @RequestParam(value = "secondary", defaultValue = "-1", required = false) Integer secondaryId,
-                          @RequestBody @Valid AccountDto accountDto){
+                          @RequestBody @Valid AccountRequest accountRequest){
 
-        return savingService.create(primaryId, secondaryId, accountDto);
+        return savingService.create(primaryId, secondaryId, accountRequest);
     }
 
 }

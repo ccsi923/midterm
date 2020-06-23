@@ -8,7 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-public class AccountDto {
+public class AccountRequest {
 
     @NotNull
     private BigDecimal amount;
