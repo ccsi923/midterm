@@ -9,6 +9,7 @@ import com.ironhack.midterm.model.Money;
 import com.ironhack.midterm.model.StudentChecking;
 import com.ironhack.midterm.model.users.AccountUser;
 import com.ironhack.midterm.model.users.Role;
+import com.ironhack.midterm.model.users.User;
 import com.ironhack.midterm.repository.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,27 +80,48 @@ public class CheckingService {
         }
         if (primaryId == -1) {
             if (accountRequest.getPrimaryOwner() != null) {
-                accountHolderRepository.save(accountRequest.getPrimaryOwner());
-                PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                AccountUser newUser = new AccountUser(accountRequest.getPrimaryOwner().getName(),passwordEncoder.encode(accountRequest.getPrimaryOwner().getPassword()));
-                userRepo.save(newUser);
-                Role role = new Role("ROLE_ACCOUNTHOLDER",newUser);
-                roleRepository.save(role);
+                LOGGER.info("Searching user with name " + accountRequest.getUserNamePrimary());
+                Optional<User> found = userRepo.findByUsername(accountRequest.getUserNamePrimary());
+
+                if (found.isEmpty()) {
+                    LOGGER.info("User with name " + accountRequest.getUserNamePrimary() + " not found");
+
+                    accountHolderRepository.save(accountRequest.getPrimaryOwner());
+                    LOGGER.info("User with name " + accountRequest.getUserNamePrimary() + " has been added");
+
+                    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                    AccountUser newUser = new AccountUser(accountRequest.getUserNamePrimary(), passwordEncoder.encode(accountRequest.getPrimaryOwner().getPassword()));
+                    userRepo.save(newUser);
+                    LOGGER.info("User with name " + accountRequest.getUserNamePrimary() + " has been added");
+
+                    Role role = new Role("ROLE_ACCOUNTHOLDER", newUser);
+                    roleRepository.save(role);
+
+                } else {
+                    LOGGER.error("The name of user " + found.get().getUsername() + " already exists");
+                    throw new WrongInput("The username " + accountRequest.getUserNamePrimary() + " already exist");
+                }
 
             } else {
-                LOGGER.error("You must give a Parimary Account Holder");
-                throw new WrongInput("You must give a Parimary Account Holder");
+                LOGGER.error("You must give a Primary Account Holder");
+                throw new WrongInput("You must give a Primary Account Holder");
             }
         }
 
         if (secondaryId == -1) {
             if (accountRequest.getSecondaryOwner() != null) {
-                accountHolderRepository.save(accountRequest.getSecondaryOwner());
-                PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                AccountUser newUser = new AccountUser(accountRequest.getSecondaryOwner().getName(),passwordEncoder.encode(accountRequest.getSecondaryOwner().getPassword()));
-                userRepo.save(newUser);
-                Role role = new Role("ROLE_ACCOUNTHOLDER",newUser);
-                roleRepository.save(role);
+                Optional<User> found = userRepo.findByUsername(accountRequest.getUserNameSecondary());
+                if (found.isEmpty()) {
+                    accountHolderRepository.save(accountRequest.getSecondaryOwner());
+                    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                    AccountUser newUser = new AccountUser(accountRequest.getUserNameSecondary(), passwordEncoder.encode(accountRequest.getSecondaryOwner().getPassword()));
+                    userRepo.save(newUser);
+                    Role role = new Role("ROLE_ACCOUNTHOLDER", newUser);
+                    roleRepository.save(role);
+
+                } else {
+                    throw new WrongInput("The username " + accountRequest.getUserNameSecondary() + " already exist");
+                }
             }
         }
 

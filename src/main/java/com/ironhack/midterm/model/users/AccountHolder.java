@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -29,6 +30,9 @@ public class AccountHolder {
     private LocalDate birth;
     @NotNull
     private String password;
+    //@OneToOne
+    //private AccountUser accountUser;
+
 
     @Valid
     @NotNull
@@ -58,21 +62,27 @@ public class AccountHolder {
 
     public AccountHolder(){}
 
-    public AccountHolder(@NotNull String name, @NotNull LocalDate birth, @NotNull Address primaryAddress) {
+    public AccountHolder(@NotNull String name, @NotNull LocalDate birth,
+                         @NotNull Address primaryAddress, @NotNull String password
+                         ) {
         this.name = name;
         this.birth = birth;
         this.primaryAddress = primaryAddress;
         this.mailingAddress = null;
         this.login = false;
+        this.password = password;
+
     }
 
-    public AccountHolder(@NotNull String name, @NotNull LocalDate birth, @NotNull String password,  @NotNull Address primaryAddress, Address mailingAddress) {
+    public AccountHolder(@NotNull String name, @NotNull LocalDate birth, @NotNull String password,
+                         @NotNull Address primaryAddress, Address mailingAddress) {
         this.name = name;
         this.birth = birth;
         this.primaryAddress = primaryAddress;
         this.mailingAddress = mailingAddress;
         this.login = false;
         this.password = password;
+
     }
 
 
@@ -147,4 +157,16 @@ public class AccountHolder {
     public void setSecondaryAccounts(List<Account> secondaryAccounts) {
         this.secondaryAccounts = secondaryAccounts;
     }
+
+    //public AccountUser getAccountUser() {
+      //  return accountUser;
+    //}
+
+    //public void setAccountUser(AccountUser accountUser) {
+      //  this.accountUser = accountUser;
+    //}
+
+    //public boolean isLogin() {
+      //  return login;
+    //}
 }

@@ -4,6 +4,7 @@ import com.ironhack.midterm.dto.TransactionRequest;
 import com.ironhack.midterm.dto.TransactionThirdPartyRequest;
 import com.ironhack.midterm.model.Transaction;
 import com.ironhack.midterm.model.users.ThirdParty;
+import com.ironhack.midterm.model.users.User;
 import com.ironhack.midterm.service.ThirdPartyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,15 +27,15 @@ public class ThirdPartyController {
 
     @PostMapping("/debit/thirdparty")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void debit(@RequestBody @Valid TransactionThirdPartyRequest transactionRequest, @AuthenticationPrincipal ThirdParty thirdParty){
+    public void debit(@RequestBody @Valid TransactionThirdPartyRequest transactionRequest, @AuthenticationPrincipal User thirdParty){
         thirdPartyService.debit(transactionRequest, thirdParty);
     }
 
     /**  DEBIT  **/
 
-    @PostMapping("/credit/thirdparty/")
+    @PostMapping("/credit/thirdparty")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void credit(@RequestBody @Valid TransactionThirdPartyRequest transactionRequest, @AuthenticationPrincipal ThirdParty thirdParty){
+    public void credit(@RequestBody @Valid TransactionThirdPartyRequest transactionRequest, @AuthenticationPrincipal User thirdParty){
         thirdPartyService.credit(transactionRequest, thirdParty);
     }
 }

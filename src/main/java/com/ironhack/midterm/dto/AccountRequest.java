@@ -15,6 +15,9 @@ public class AccountRequest {
     @Valid
     private String secretKey;
 
+    private String userNamePrimary;
+
+    private String userNameSecondary;
 
     @Valid
     private AccountHolder primaryOwner;
@@ -28,6 +31,8 @@ public class AccountRequest {
     private BigDecimal interestRate;
     @Valid
     private BigDecimal creditLimit;
+
+    public AccountRequest(){}
 
     //private Status status; -->Status Active when you create one
 
@@ -95,6 +100,22 @@ public class AccountRequest {
 
     public void setMonthlyMaintenanceFee(BigDecimal monthlyMaintenanceFee) {
         this.monthlyMaintenanceFee = monthlyMaintenanceFee;
+    }
+
+    public String getUserNamePrimary() {
+        return userNamePrimary;
+    }
+
+    public void setUserNamePrimary(String userNamePrimary) {
+        this.userNamePrimary = userNamePrimary;
+    }
+
+    public String getUserNameSecondary() {
+        return userNameSecondary;
+    }
+
+    public void setUserNameSecondary(String userNameSecondary) {
+        this.userNameSecondary = userNameSecondary;
     }
 
     @Override

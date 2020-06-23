@@ -6,6 +6,7 @@ import com.ironhack.midterm.exceptions.NotEnoughFunds;
 import com.ironhack.midterm.exceptions.WrongInput;
 import com.ironhack.midterm.model.*;
 import com.ironhack.midterm.model.users.ThirdParty;
+import com.ironhack.midterm.model.users.User;
 import com.ironhack.midterm.repository.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,7 +45,7 @@ public class ThirdPartyService {
 
     @Secured({"ROLE_THIRDPARTY"})
     @Transactional
-    public void debit(TransactionThirdPartyRequest transactionRequest, ThirdParty thirdParty){
+    public void debit(TransactionThirdPartyRequest transactionRequest, User thirdParty){
         LOGGER.info("[INIT] - debit logged " + thirdParty.getUsername());
 
         try {
@@ -54,6 +55,7 @@ public class ThirdPartyService {
                     LOGGER.info("Searching Saving Account with id " + transactionRequest.getAccountId() );
 
                     Saving saving = savingRepository.findById(transactionRequest.getAccountId()).orElseThrow(()-> new WrongInput("There is not "+ transactionRequest.getAccountType() +" with id " + transactionRequest.getAccountId()));
+                    saving.check();
                     LOGGER.info("Saving Account Found with id " + transactionRequest.getAccountId()  );
 
                     if (saving.getSecretKey().equals(transactionRequest.getSecretKey().trim())) {
@@ -74,6 +76,7 @@ public class ThirdPartyService {
                                 LOGGER.info("Amount debited = " + transactionRequest.getAmount());
 
                             }
+
                             savingRepository.save(saving);
                             LOGGER.info("New amount = " + saving.getBalance().getAmount());
                             return;
@@ -146,7 +149,7 @@ public class ThirdPartyService {
 
     @Secured({"ROLE_THIRDPARTY"})
     @Transactional
-    public void credit(TransactionThirdPartyRequest transactionRequest, ThirdParty thirdParty){
+    public void credit(TransactionThirdPartyRequest transactionRequest, User thirdParty){
         LOGGER.info("[INIT] - credit logged " + thirdParty.getUsername());
 
         try {

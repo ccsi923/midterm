@@ -8,6 +8,7 @@ import com.ironhack.midterm.model.Money;
 import com.ironhack.midterm.model.Saving;
 import com.ironhack.midterm.model.users.AccountUser;
 import com.ironhack.midterm.model.users.Role;
+import com.ironhack.midterm.model.users.User;
 import com.ironhack.midterm.repository.AccountHolderRepository;
 import com.ironhack.midterm.repository.RoleRepository;
 import com.ironhack.midterm.repository.SavingRepository;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,12 +81,19 @@ public class SavingService {
         }
         if (primaryId == -1){
              if (accountRequest.getPrimaryOwner() != null) {
-                 accountHolderRepository.save(accountRequest.getPrimaryOwner());
-                 PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                 AccountUser newUser = new AccountUser(accountRequest.getPrimaryOwner().getName(),passwordEncoder.encode(accountRequest.getPrimaryOwner().getPassword()));
-                 userRepo.save(newUser);
-                 Role role = new Role("ROLE_ACCOUNTHOLDER",newUser);
-                 roleRepository.save(role);
+                 Optional<User> found = userRepo.findByUsername(accountRequest.getUserNamePrimary());
+
+                 if (found.isEmpty()) {
+                     accountHolderRepository.save(accountRequest.getPrimaryOwner());
+                     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                     AccountUser newUser = new AccountUser(accountRequest.getUserNamePrimary(), passwordEncoder.encode(accountRequest.getPrimaryOwner().getPassword()));
+                     userRepo.save(newUser);
+                     Role role = new Role("ROLE_ACCOUNTHOLDER", newUser);
+                     roleRepository.save(role);
+                 } else {
+                     LOGGER.error("The name of user " + found.get().getUsername() + " already exists");
+                     throw new WrongInput("The username " + accountRequest.getUserNamePrimary() + " already exist");
+                 }
              } else {
                  LOGGER.error("You must give a Parimary Account Holder" );
                  throw new WrongInput("You must give a Parimary Account Holder");
@@ -93,15 +102,23 @@ public class SavingService {
 
         if(secondaryId == -1){
             if (accountRequest.getSecondaryOwner() != null){
-                accountHolderRepository.save(accountRequest.getSecondaryOwner());
-                PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                AccountUser newUser = new AccountUser(accountRequest.getSecondaryOwner().getName(),passwordEncoder.encode(accountRequest.getSecondaryOwner().getPassword()));
-                userRepo.save(newUser);
-                Role role = new Role("ROLE_ACCOUNTHOLDER",newUser);
-                roleRepository.save(role);
+                Optional<User> found = userRepo.findByUsername(accountRequest.getUserNameSecondary());
+
+                if (found.isEmpty()) {
+                    accountHolderRepository.save(accountRequest.getSecondaryOwner());
+                    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                    AccountUser newUser = new AccountUser(accountRequest.getUserNameSecondary(), passwordEncoder.encode(accountRequest.getSecondaryOwner().getPassword()));
+                    userRepo.save(newUser);
+                    Role role = new Role("ROLE_ACCOUNTHOLDER", newUser);
+                    roleRepository.save(role);
+                }else {
+                    LOGGER.error("The name of user " + found.get().getUsername() + " already exists");
+                    throw new WrongInput("The username " + accountRequest.getUserNameSecondary() + " already exist");
+                }
 
             }
         }
+
         if(accountRequest.getAmount().compareTo(new BigDecimal("1000")) < 0){
             throw new WrongInput("Amount to create account must be greater than 1000");
         }
