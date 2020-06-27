@@ -1,10 +1,8 @@
 package com.ironhack.midterm.controller.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.ironhack.midterm.dto.AccessAccountRequest;
 import com.ironhack.midterm.dto.TransactionRequest;
 import com.ironhack.midterm.dto.UserRequest;
 import com.ironhack.midterm.enums.Status;
@@ -158,57 +156,44 @@ class AdminControllerTest {
         MvcResult result =   mockMvc.perform(get("/users")
                 .with(user("admin").roles("ADMIN"))).andExpect(status().isOk()).andReturn();
         assertTrue(result.getResponse().getContentAsString().contains("pepito"));
-
     }
 
     @Test
     void findById_saving() throws Exception {
         List<Saving> savings = savingRepository.findAll();
-        AccessAccountRequest accessAccountRequest = new AccessAccountRequest(savings.get(0).getId(), "saving");
-        mockMvc.perform(get("/account/admin")
-                .with(user("admin").roles("ADMIN"))
-                .content(objectMapper.writeValueAsString(accessAccountRequest))
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/account/admin/"+savings.get(0).getId())
+                .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk());
 
     }
     @Test
     void findById_checking() throws Exception {
         List<Checking> checkings = checkingReposiroty.findAll();
-        AccessAccountRequest accessAccountRequest = new AccessAccountRequest(checkings.get(0).getId(), "checking");
-        mockMvc.perform(get("/account/admin")
-                .with(user("admin").roles("ADMIN"))
-                .content(objectMapper.writeValueAsString(accessAccountRequest))
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/account/admin/"+checkings.get(0).getId())
+                .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk());
 
     }
     @Test
     void findById_student() throws Exception {
         List<StudentChecking> studentCheckings = studentCheckingRepository.findAll();
-        AccessAccountRequest accessAccountRequest = new AccessAccountRequest(studentCheckings.get(0).getId(), "student");
-        mockMvc.perform(get("/account/admin")
-                .with(user("admin").roles("ADMIN"))
-                .content(objectMapper.writeValueAsString(accessAccountRequest))
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/account/admin/"+studentCheckings.get(0).getId())
+                .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk());
 
     }
     @Test
     void findById_creditcard() throws Exception {
         List<CreditCard> creditCards = creditCardRepository.findAll();
-        AccessAccountRequest accessAccountRequest = new AccessAccountRequest(creditCards.get(0).getId(), "creditcard");
-        mockMvc.perform(get("/account/admin")
-                .with(user("admin").roles("ADMIN"))
-                .content(objectMapper.writeValueAsString(accessAccountRequest))
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/account/admin/"+creditCards.get(0).getId())
+                .with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk());
     }
 
     @Test
     void debit_saving() throws Exception {
         List<Saving> savings = savingRepository.findAll();
-        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"),savings.get(0).getId(), "saving");
+        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"),savings.get(0).getId());
         mockMvc.perform(post("/debit/admin/")
                 .with(user("admin").roles("ADMIN"))
                 .content(objectMapper.writeValueAsString(transactionRequest))
@@ -219,7 +204,7 @@ class AdminControllerTest {
     @Test
     void debit_checking() throws Exception {
         List<Checking> checkings = checkingReposiroty.findAll();
-        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"),checkings.get(0).getId(), "checking");
+        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"),checkings.get(0).getId());
         mockMvc.perform(post("/debit/admin/")
                 .with(user("admin").roles("ADMIN"))
                 .content(objectMapper.writeValueAsString(transactionRequest))
@@ -230,7 +215,7 @@ class AdminControllerTest {
     @Test
     void debit_student() throws Exception {
         List<StudentChecking> studentCheckings = studentCheckingRepository.findAll();
-        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"), studentCheckings.get(0).getId(), "student");
+        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"), studentCheckings.get(0).getId());
         mockMvc.perform(post("/debit/admin/")
                 .with(user("admin").roles("ADMIN"))
                 .content(objectMapper.writeValueAsString(transactionRequest))
@@ -241,7 +226,7 @@ class AdminControllerTest {
     @Test
     void debit_creditcard() throws Exception {
         List<CreditCard> creditCards = creditCardRepository.findAll();
-        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"),creditCards.get(0).getId(), "creditcard");
+        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"),creditCards.get(0).getId());
         mockMvc.perform(post("/debit/admin/")
                 .with(user("admin").roles("ADMIN"))
                 .content(objectMapper.writeValueAsString(transactionRequest))
@@ -252,7 +237,7 @@ class AdminControllerTest {
     @Test
     void credit_saving() throws Exception {
         List<Saving> savings = savingRepository.findAll();
-        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"),savings.get(0).getId(), "saving");
+        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"),savings.get(0).getId());
         mockMvc.perform(post("/credit/admin/")
                 .with(user("admin").roles("ADMIN"))
                 .content(objectMapper.writeValueAsString(transactionRequest))
@@ -263,7 +248,7 @@ class AdminControllerTest {
     @Test
     void credit_checking() throws Exception {
         List<Checking> checkings = checkingReposiroty.findAll();
-        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"), checkings.get(0).getId(), "checking");
+        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"), checkings.get(0).getId());
         mockMvc.perform(post("/credit/admin/")
                 .with(user("admin").roles("ADMIN"))
                 .content(objectMapper.writeValueAsString(transactionRequest))
@@ -274,7 +259,7 @@ class AdminControllerTest {
     @Test
     void credit_student() throws Exception {
         List<StudentChecking> studentCheckings = studentCheckingRepository.findAll();
-        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"),studentCheckings.get(0).getId(), "student");
+        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"),studentCheckings.get(0).getId());
         mockMvc.perform(post("/credit/admin/")
                 .with(user("admin").roles("ADMIN"))
                 .content(objectMapper.writeValueAsString(transactionRequest))
@@ -285,7 +270,7 @@ class AdminControllerTest {
     @Test
     void credit_creditcard() throws Exception {
         List<CreditCard> creditCards = creditCardRepository.findAll();
-        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"), creditCards.get(0).getId(), "creditcard");
+        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"), creditCards.get(0).getId());
         mockMvc.perform(post("/credit/admin/")
                 .with(user("admin").roles("ADMIN"))
                 .content(objectMapper.writeValueAsString(transactionRequest))
@@ -318,7 +303,7 @@ class AdminControllerTest {
     @Test
     void credit_studentFrozen_BadRequest() throws Exception {
         List<StudentChecking> studentCheckings = studentCheckingRepository.findAll();
-        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"),studentCheckings.get(0).getId(), "student");
+        TransactionRequest transactionRequest = new TransactionRequest(new BigDecimal("100"),studentCheckings.get(0).getId());
         mockMvc.perform(post("/credit/admin/")
                 .with(user("admin").roles("ADMIN"))
                 .content(objectMapper.writeValueAsString(transactionRequest))

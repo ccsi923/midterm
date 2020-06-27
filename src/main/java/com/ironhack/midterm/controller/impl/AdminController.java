@@ -31,19 +31,17 @@ public class AdminController {
         return adminService.findAll();
     }
 
-
-    @GetMapping("/account/admin")
+    @GetMapping("/account/admin/{id}")
     @ApiOperation(value = "Find account by id being admin",
             notes = "Admin find an account by his id",
             response = AccountAdminAccess.class)
     @ResponseStatus(HttpStatus.OK)
-    public AccountAdminAccess findById(@RequestBody @Valid AccessAccountRequest accessAccountRequest){
+    public AccountAdminAccess findById(@PathVariable("id") Integer acId){
 
-        return adminService.findById(accessAccountRequest);
+        return adminService.findById(acId);
     }
 
     /**  Debit  **/
-
     @PostMapping("/debit/admin/")
     @ApiOperation(value = "Debit an account being admin",
             notes = "Admin debit an account")
@@ -52,9 +50,7 @@ public class AdminController {
          adminService.debit(transactionRequest);
     }
 
-
     /**  Credit  **/
-
     @PostMapping("/credit/admin/")
     @ApiOperation(value = "Credit an account being admin",
             notes = "Admin credit an account")

@@ -9,16 +9,14 @@ public class TransactionRequest {
     private BigDecimal amount;
     @NotNull
     private Integer accountId;
-    @NotNull
-    private String accountType;
 
     public TransactionRequest() {
     }
 
-    public TransactionRequest(@NotNull BigDecimal amount, @NotNull Integer accountId, @NotNull String accountType) {
+    public TransactionRequest(@NotNull BigDecimal amount, @NotNull Integer accountId) {
         this.amount = amount;
         this.accountId = accountId;
-        this.accountType = accountType;
+
     }
 
     public BigDecimal getAmount() {
@@ -37,20 +35,4 @@ public class TransactionRequest {
         this.accountId = accountId;
     }
 
-    public String getAccountType() {
-        return accountType;
-    }
-
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
-    }
-
-    @Override
-    public String toString() {
-        return "TransactionRequest{" +
-                "amount=" + amount +
-                ", accountId=" + accountId +
-                ", accountType='" + accountType + '\'' +
-                '}';
-    }
 }

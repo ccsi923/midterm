@@ -17,11 +17,9 @@ public class TransactionThirdPartyRequest {
 
     public TransactionThirdPartyRequest() {
     }
-
     public TransactionThirdPartyRequest(@NotNull BigDecimal amount, @NotNull Integer accountId, @NotNull String secretKey) {
         this.amount = amount;
         this.accountId = accountId;
-
         this.secretKey = secretKey;
     }
 }

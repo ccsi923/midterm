@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,11 +51,16 @@ public class CheckingService {
     @Secured({"ROLE_ADMIN"})
     public List<CheckingVM> findAll(){
         LOGGER.info("[INIT] - findAll");
-        List<CheckingVM> checkingVMS = checkingReposiroty.findAll().stream().map(
-                checking -> new CheckingVM(checking.getId(),checking.getBalance(),
-                        checking.getPrimaryOwner(), checking.getSecondaryOwner(), checking.getPenaltyFee(),
-                        checking.getStatus(), checking.getMinimumBalance(), checking.getMonthlyMaintenanceFee())
-        ).collect(Collectors.toList());
+        List<CheckingVM> checkingVMS = new ArrayList<>();
+        checkingReposiroty.findAll().forEach(
+                        checking -> {
+                         checkingVMS.add(new CheckingVM(checking.getId(), checking.getBalance(),
+                                checking.getPrimaryOwner(), checking.getSecondaryOwner(),
+                                checking.getPenaltyFee(), checking.getStatus(),
+                                checking.getMinimumBalance(), checking.getMonthlyMaintenanceFee()));
+                }
+
+        );
         LOGGER.info("[END] - findAll");
         return checkingVMS;
     }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +18,6 @@ import java.util.stream.Collectors;
 public class StudentCheckingService {
 
     private static final Logger LOGGER = LogManager.getLogger(CreditCardService.class);
-
 
     @Autowired
     private StudentCheckingRepository studentCheckingRepository;
@@ -31,10 +31,15 @@ public class StudentCheckingService {
     @Secured({"ROLE_ADMIN"})
     public List<StudentCheckingVM> findAll(){
         LOGGER.info("[INIT] - findAll");
-        List<StudentCheckingVM> studentCheckingVMS = studentCheckingRepository.findAll().stream().map(
-                studentChecking -> new StudentCheckingVM(studentChecking.getId(),studentChecking.getBalance(),studentChecking.getSecretKey(), studentChecking.getPrimaryOwner(),
-                        studentChecking.getSecondaryOwner(), studentChecking.getPenaltyFee(), studentChecking.getStatus())
-        ).collect(Collectors.toList());
+        List<StudentCheckingVM> studentCheckingVMS = new ArrayList<>();
+
+        studentCheckingRepository.findAll().forEach(
+                studentChecking -> {
+                  studentCheckingVMS.add(new StudentCheckingVM(studentChecking.getId(),studentChecking.getBalance(),studentChecking.getSecretKey(),
+                            studentChecking.getPrimaryOwner(), studentChecking.getSecondaryOwner(),
+                            studentChecking.getPenaltyFee(), studentChecking.getStatus()));
+                }
+        );
         LOGGER.info("[END] - findAll");
         return studentCheckingVMS;
     }

@@ -66,146 +66,128 @@ public class AdminService {
     }
 
     @Secured({"ROLE_ADMIN"})
-    public AccountAdminAccess findById(AccessAccountRequest accessAccountRequest){
+    public AccountAdminAccess findById(Integer id){
         LOGGER.info("[INIT] - findById");
 
-        try {
-            String type = accessAccountRequest.getAccountType().toLowerCase().trim();
-            switch (type){
-                case "saving":
-                    Saving saving = savingRepository.findById(accessAccountRequest.getId()).orElseThrow(()-> new  WrongInput("There is not "+ accessAccountRequest.getAccountType() +" with id " + accessAccountRequest.getId()));
-                    LOGGER.info("Find Saving Account with Id " + accessAccountRequest.getId() );
-                    LOGGER.info("[END] - findById");
-                    return  new AccountAdminAccess(saving.getId(), saving.getPrimaryOwner().getName(), saving.getBalance());
-                case "creditcard" :
-                    CreditCard creditCard = creditCardRepository.findById(accessAccountRequest.getId()).orElseThrow(()-> new  WrongInput("There is not "+ accessAccountRequest.getAccountType() +" with id " + accessAccountRequest.getId()));
-                    LOGGER.info("Find CreditCard Account with Id " + accessAccountRequest.getId() );
-                    LOGGER.info("[END] - findById");
-                    return  new AccountAdminAccess(creditCard.getId(), creditCard.getPrimaryOwner().getName(), creditCard.getBalance());
-                case "student" :
-                    StudentChecking studentChecking = studentCheckingRepository.findById(accessAccountRequest.getId()).orElseThrow(()-> new  WrongInput("There is not "+ accessAccountRequest.getAccountType() +" with id " + accessAccountRequest.getId()));
-                    LOGGER.info("Find Student Account with Id " + accessAccountRequest.getId() );
-                    LOGGER.info("[END] - findById");
-                    return  new AccountAdminAccess(studentChecking.getId(), studentChecking.getPrimaryOwner().getName(), studentChecking.getBalance());
-                case "checking" :
-                    Checking checking = checkingReposiroty.findById(accessAccountRequest.getId()).orElseThrow(()-> new  WrongInput("There is not "+ accessAccountRequest.getAccountType() +" with id " + accessAccountRequest.getId()));
-                    LOGGER.info("Find Checking Account with Id " + accessAccountRequest.getId() );
-                    LOGGER.info("[END] - findById");
-                    return  new AccountAdminAccess(checking.getId(), checking.getPrimaryOwner().getName(), checking.getBalance());
-            }
+        Account account = accountRepository.findById(id).orElseThrow(()-> new WrongInput("Account with id"+ id +"not found"));
 
-        } catch (Exception e){
-            LOGGER.error("There is not "+ accessAccountRequest.getAccountType() +" with id " + accessAccountRequest.getId());
-            throw new WrongInput("There is not "+ accessAccountRequest.getAccountType() +" with id " + accessAccountRequest.getId());
-        } return null;
+        if(account instanceof Checking){
+            ((Checking) account).check();
+            Checking checking = (Checking) account;
+            LOGGER.info("Find Checking Account with Id " + id);
+            LOGGER.info("[END] - findById");
+            return  new AccountAdminAccess(checking.getId(), checking.getPrimaryOwner().getName(), checking.getBalance());
+
+        }
+        if(account instanceof StudentChecking){
+            StudentChecking studentChecking = (StudentChecking) account;
+            LOGGER.info("Find Student Account with Id " + id);
+            LOGGER.info("[END] - findById");
+            return  new AccountAdminAccess(studentChecking.getId(), studentChecking.getPrimaryOwner().getName(), studentChecking.getBalance());
+        }
+        if(account instanceof Saving){
+            ((Saving) account).check();
+            Saving saving = (Saving) account;
+            LOGGER.info("Find Saving Account with id " + id);
+            LOGGER.info("[END] - findById");
+            return  new AccountAdminAccess(saving.getId(), saving.getPrimaryOwner().getName(), saving.getBalance());
+        }
+        if(account instanceof CreditCard){
+            ((CreditCard) account).check();
+            CreditCard creditCard = (CreditCard) account;
+            LOGGER.info("Find CreditCard Account with Id " + id);
+            LOGGER.info("[END] - findById");
+            return  new AccountAdminAccess(creditCard.getId(), creditCard.getPrimaryOwner().getName(), creditCard.getBalance());
+        }
+        throw new WrongInput("Not Found");
     }
-
 
     @Secured({"ROLE_ADMIN"})
     @Transactional
     public void debit(TransactionRequest transactionRequest){
         LOGGER.info("[INIT] - debit");
 
-        try {
-            String type = transactionRequest.getAccountType().toLowerCase().trim();
-            switch (type){
-                case "saving":
-                    LOGGER.info("Searching Saving Account with id " + transactionRequest.getAccountId() );
-                    Saving saving = savingRepository.findById(transactionRequest.getAccountId()).orElseThrow(()-> new  WrongInput("There is not "+ transactionRequest.getAccountType() +" with id " + transactionRequest.getAccountId()));
-                    LOGGER.info("Saving Account Found with id " + transactionRequest.getAccountId()  );
+        Account account = accountRepository.findById(transactionRequest.getAccountId()).orElseThrow(()-> new WrongInput("Account with id "+ transactionRequest.getAccountId() +" not found"));
 
-                    if ( ( (saving.getBalance().getAmount().subtract(transactionRequest.getAmount())).compareTo(new BigDecimal("0")) >= 0)  ) {
+        if(account instanceof Checking){
+            ((Checking) account).check();
+            Checking checking = (Checking) account;
+            if ( ( (checking.getBalance().getAmount().subtract(transactionRequest.getAmount())).compareTo(new BigDecimal("0")) >= 0)  ) {
 
-                        if  ( (!saving.isPenalty())
-                                              &&
-                            ( (saving.getBalance().getAmount().subtract(transactionRequest.getAmount())).compareTo(saving.getMinimumBalance())  <= 0 )  ){
-                                saving.getBalance().decreaseAmount(transactionRequest.getAmount().add(saving.getPenaltyFee()) );
-                                saving.setPenalty(true);
-                                LOGGER.info("Amount debited = " + transactionRequest.getAmount().add(saving.getPenaltyFee()));
+                if  ( (!checking.isPenalty()) && ( (checking.getBalance().getAmount().subtract(transactionRequest.getAmount())).compareTo(checking.getMinimumBalance())  <= 0 )  ){
+                    checking.getBalance().decreaseAmount(transactionRequest.getAmount().add(checking.getPenaltyFee()) );
+                    checking.setPenalty(true);
+                    LOGGER.info("Amount debited = " + transactionRequest.getAmount().add(checking.getPenaltyFee()));
+
+                } else {
+                    checking.getBalance().decreaseAmount(transactionRequest.getAmount());
+
+                }
+                checkingReposiroty.save(checking);
+                LOGGER.info("New amount = " + checking.getBalance().getAmount());
+                return;
+
+            }
+            else {
+                LOGGER.error("There is not enough funds. Actual balance: " + checking.getBalance().getAmount());
+                throw new NotEnoughFunds("There is not enough funds. Actual balance: " + checking.getBalance().getAmount() );
+            }
+        }
+        if(account instanceof StudentChecking){
+            StudentChecking studentChecking = (StudentChecking) account;
+
+            if( ( (studentChecking.getBalance().getAmount().subtract(transactionRequest.getAmount())).compareTo(new BigDecimal("0")) >= 0) ) {
+                studentChecking.getBalance().decreaseAmount(transactionRequest.getAmount());
+                studentCheckingRepository.save(studentChecking);
+                LOGGER.info("New amount = " + studentChecking.getBalance().getAmount());
+                return;
+            } else {
+                LOGGER.error("There is not enough funds. Actual balance: " + studentChecking.getBalance().getAmount());
+                throw new NotEnoughFunds("There is not enough funds. Actual balance: " + studentChecking.getBalance().getAmount() );
+            }
+        }
+        if(account instanceof Saving){
+            ((Saving) account).check();
+            Saving saving = (Saving) account;
+            if ( ( (saving.getBalance().getAmount().subtract(transactionRequest.getAmount())).compareTo(new BigDecimal("0")) >= 0)  ) {
+                if  ( (!saving.isPenalty())
+                        &&
+                        ( (saving.getBalance().getAmount().subtract(transactionRequest.getAmount())).compareTo(saving.getMinimumBalance())  <= 0 )  ){
+                    saving.getBalance().decreaseAmount(transactionRequest.getAmount().add(saving.getPenaltyFee()) );
+                    saving.setPenalty(true);
+                    LOGGER.info("Amount debited = " + transactionRequest.getAmount().add(saving.getPenaltyFee()));
 
 
-                        } else {
-                           saving.getBalance().decreaseAmount(transactionRequest.getAmount());
-                            LOGGER.info("Amount debited = " + transactionRequest.getAmount());
+                } else {
+                    saving.getBalance().decreaseAmount(transactionRequest.getAmount());
+                    LOGGER.info("Amount debited = " + transactionRequest.getAmount());
 
-                        }
-                        savingRepository.save(saving);
-                        LOGGER.info("New amount = " + saving.getBalance().getAmount());
-                        return;
-
-                    }
-
-                    else {
-                        LOGGER.error("There is not enough funds. Actual balance: " + saving.getBalance().getAmount());
-                        throw new NotEnoughFunds("There is not enough funds. Actual balance: " + saving.getBalance().getAmount() );
-                    }
-
-                case "creditcard" :
-
-                    LOGGER.info("Searching CreditCard Account with id " + transactionRequest.getAccountId() );
-                    CreditCard creditCard = creditCardRepository.findById(transactionRequest.getAccountId()).orElseThrow(()-> new  WrongInput("There is not "+ transactionRequest.getAccountType() +" with id " + transactionRequest.getAccountId()));
-                    LOGGER.info("CreditCard Account Found with id " + transactionRequest.getAccountId()  );
-
-                    if (  (creditCard.getBalance().getAmount().subtract(transactionRequest.getAmount())).compareTo(new BigDecimal("0")) >= 0 ) {
-
-                        creditCard.getBalance().decreaseAmount(transactionRequest.getAmount());
-                        creditCardRepository.save(creditCard);
-                        LOGGER.info("New amount = " + creditCard.getBalance().getAmount());
-                        return;
-                    } else {
-                        LOGGER.error("There is not enough funds. Actual balance: " + creditCard.getBalance().getAmount());
-                        throw new NotEnoughFunds("There is not enough funds. Actual balance: " + creditCard.getBalance().getAmount() );
-                    }
-
-                case "student" :
-
-                    LOGGER.info("Searching Student Account with id " + transactionRequest.getAccountId() );
-                    StudentChecking studentChecking = studentCheckingRepository.findById(transactionRequest.getAccountId()).orElseThrow(()-> new  WrongInput("There is not "+ transactionRequest.getAccountType() +" with id " + transactionRequest.getAccountId()));
-                    LOGGER.info("Student Account Found with id " + transactionRequest.getAccountId() );
-
-                    if( ( (studentChecking.getBalance().getAmount().subtract(transactionRequest.getAmount())).compareTo(new BigDecimal("0")) >= 0) ) {
-
-                        studentChecking.getBalance().decreaseAmount(transactionRequest.getAmount());
-                        studentCheckingRepository.save(studentChecking);
-                        LOGGER.info("New amount = " + studentChecking.getBalance().getAmount());
-                        return;
-                    } else {
-                        LOGGER.error("There is not enough funds. Actual balance: " + studentChecking.getBalance().getAmount());
-                        throw new NotEnoughFunds("There is not enough funds. Actual balance: " + studentChecking.getBalance().getAmount() );
-                    }
-
-                case "checking" :
-
-                    LOGGER.info("Searching Checking Account with id " + transactionRequest.getAccountId() );
-                    Checking checking = checkingReposiroty.findById(transactionRequest.getAccountId()).orElseThrow(()-> new  WrongInput("There is not "+ transactionRequest.getAccountType() +" with id " + transactionRequest.getAccountId()));
-                    LOGGER.info("Checking Account Found with id " + transactionRequest.getAccountId()  );
-
-                    if ( ( (checking.getBalance().getAmount().subtract(transactionRequest.getAmount())).compareTo(new BigDecimal("0")) >= 0)  ) {
-
-                        if  ( (!checking.isPenalty()) && ( (checking.getBalance().getAmount().subtract(transactionRequest.getAmount())).compareTo(checking.getMinimumBalance())  <= 0 )  ){
-                            checking.getBalance().decreaseAmount(transactionRequest.getAmount().add(checking.getPenaltyFee()) );
-                            checking.setPenalty(true);
-                            LOGGER.info("Amount debited = " + transactionRequest.getAmount().add(checking.getPenaltyFee()));
-
-                        } else {
-                          checking.getBalance().decreaseAmount(transactionRequest.getAmount());
-
-                        }
-                        checkingReposiroty.save(checking);
-                        LOGGER.info("New amount = " + checking.getBalance().getAmount());
-                        return;
-
-                    }
-                    else {
-                        LOGGER.error("There is not enough funds. Actual balance: " + checking.getBalance().getAmount());
-                        throw new NotEnoughFunds("There is not enough funds. Actual balance: " + checking.getBalance().getAmount() );
-                    }
+                }
+                savingRepository.save(saving);
+                LOGGER.info("New amount = " + saving.getBalance().getAmount());
+                return;
+            }
+            else {
+                LOGGER.error("There is not enough funds. Actual balance: " + saving.getBalance().getAmount());
+                throw new NotEnoughFunds("There is not enough funds. Actual balance: " + saving.getBalance().getAmount() );
             }
 
-        } catch (Exception e){
-            LOGGER.error("Fail Transaction");
-            throw new WrongInput("Fail Transaction");
         }
+        if(account instanceof CreditCard){
+            ((CreditCard) account).check();
+            CreditCard creditCard = (CreditCard) account;
+            if (  (creditCard.getBalance().getAmount().subtract(transactionRequest.getAmount())).compareTo(new BigDecimal("0")) >= 0 ) {
+
+                creditCard.getBalance().decreaseAmount(transactionRequest.getAmount());
+                creditCardRepository.save(creditCard);
+                LOGGER.info("New amount = " + creditCard.getBalance().getAmount());
+                return;
+            } else {
+                LOGGER.error("There is not enough funds. Actual balance: " + creditCard.getBalance().getAmount());
+                throw new NotEnoughFunds("There is not enough funds. Actual balance: " + creditCard.getBalance().getAmount() );
+            }
+        }
+        throw new WrongInput("Not Found");
     }
 
     @Secured({"ROLE_ADMIN"})
@@ -213,68 +195,60 @@ public class AdminService {
     public void credit(TransactionRequest transactionRequest){
         LOGGER.info("[INIT] - credit");
 
-        try {
-            String type = transactionRequest.getAccountType().toLowerCase().trim();
-            switch (type){
-                case "saving":
+        Account account = accountRepository.findById(transactionRequest.getAccountId()).orElseThrow(()-> new WrongInput("Account with id "+ transactionRequest.getAccountId() +" not found"));
 
-                    LOGGER.info("Searching Saving Account");
-                    Saving saving = savingRepository.findById(transactionRequest.getAccountId()).orElseThrow(()-> new  WrongInput("There is not "+ transactionRequest.getAccountType() +" with id " + transactionRequest.getAccountId()));
-                    saving.check();
-                    LOGGER.info("Saving Account Found");
-                    if ( ( saving.isPenalty() ) && ( (saving.getBalance().getAmount().add(transactionRequest.getAmount())).compareTo(saving.getMinimumBalance())  >= 0 ) ) {
-                        saving.getBalance().increaseAmount(transactionRequest.getAmount());
-                        saving.setPenalty(false);
-                        LOGGER.info("Added = " + transactionRequest.getAmount());
-                        LOGGER.info("New amount = " + saving.getBalance().getAmount());
-                    } else {
-                        saving.getBalance().increaseAmount(transactionRequest.getAmount());
-                        LOGGER.info("New amount = " + saving.getBalance().getAmount());
-                    }
-                    savingRepository.save(saving);
-                    return;
-                case "creditcard" :
-                    LOGGER.info("Searching CreditCard Account");
-                    CreditCard creditCard = creditCardRepository.findById(transactionRequest.getAccountId()).orElseThrow(()-> new  WrongInput("There is not "+ transactionRequest.getAccountType() +" with id " + transactionRequest.getAccountId()));
-                    creditCard.check();
-                    LOGGER.info("CreditCard Account Found");
-                    creditCard.setBalance( new Money (creditCard.getBalance().increaseAmount(transactionRequest.getAmount())) );
-                    creditCardRepository.save(creditCard);
-                    LOGGER.info("New amount = " + creditCard.getBalance().getAmount());
-                    return;
-                case "student" :
-                    LOGGER.info("Searching Student Account");
-                    StudentChecking studentChecking = studentCheckingRepository.findById(transactionRequest.getAccountId()).orElseThrow(()-> new  WrongInput("There is not "+ transactionRequest.getAccountType() +" with id " + transactionRequest.getAccountId()));
-                    LOGGER.info("Student Account Found");
+        if(account instanceof Checking){
+            ((Checking) account).check();
+            Checking checking = (Checking) account;
+            LOGGER.info("Checking Account Found");
+            if ( ( checking.isPenalty() ) && ( (checking.getBalance().getAmount().add(transactionRequest.getAmount())).compareTo(checking.getMinimumBalance())  >= 0 ) ) {
+                checking.getBalance().increaseAmount(transactionRequest.getAmount());
+                checking.setPenalty(false);
+                LOGGER.info("Added = " + transactionRequest.getAmount());
+                LOGGER.info("New amount = " + checking.getBalance().getAmount());
 
-                    studentChecking.setBalance( new Money (studentChecking.getBalance().increaseAmount(transactionRequest.getAmount())) );
-                    studentCheckingRepository.save(studentChecking);
-                    LOGGER.info("New amount = " + studentChecking.getBalance().getAmount());
-                    return;
-                case "checking" :
-
-                    LOGGER.info("Searching Checking Account");
-                    Checking checking = checkingReposiroty.findById(transactionRequest.getAccountId()).orElseThrow(()-> new  WrongInput("There is not "+ transactionRequest.getAccountType() +" with id " + transactionRequest.getAccountId()));
-                    LOGGER.info("Checking Account Found");
-                    if ( ( checking.isPenalty() ) && ( (checking.getBalance().getAmount().add(transactionRequest.getAmount())).compareTo(checking.getMinimumBalance())  >= 0 ) ) {
-                        checking.getBalance().increaseAmount(transactionRequest.getAmount());
-                        checking.setPenalty(false);
-                        LOGGER.info("Added = " + transactionRequest.getAmount());
-                        LOGGER.info("New amount = " + checking.getBalance().getAmount());
-
-                    } else {
-                        checking.getBalance().increaseAmount(transactionRequest.getAmount());
-                        LOGGER.info("New amount = " + checking.getBalance().getAmount());
-                    }
-                    checkingReposiroty.save(checking);
-                    LOGGER.info("[INIT] - credit");
-                    return;
+            } else {
+                checking.getBalance().increaseAmount(transactionRequest.getAmount());
+                LOGGER.info("New amount = " + checking.getBalance().getAmount());
             }
-
-        } catch (Exception e){
-            LOGGER.error("Fail Transaction");
-            throw new WrongInput("Fail Transaction");
+            checkingReposiroty.save(checking);
+            LOGGER.info("[INIT] - credit");
+            return;
         }
+        if(account instanceof StudentChecking){
+            StudentChecking studentChecking = (StudentChecking) account;
+            LOGGER.info("Student Account Found");
+            studentChecking.setBalance( new Money (studentChecking.getBalance().increaseAmount(transactionRequest.getAmount())) );
+            studentCheckingRepository.save(studentChecking);
+            LOGGER.info("New amount = " + studentChecking.getBalance().getAmount());
+            return;
+        }
+        if(account instanceof Saving){
+            ((Saving) account).check();
+            Saving saving = (Saving) account;
+            LOGGER.info("Saving Account Found");
+            if ( ( saving.isPenalty() ) && ( (saving.getBalance().getAmount().add(transactionRequest.getAmount())).compareTo(saving.getMinimumBalance())  >= 0 ) ) {
+                saving.getBalance().increaseAmount(transactionRequest.getAmount());
+                saving.setPenalty(false);
+                LOGGER.info("Added = " + transactionRequest.getAmount());
+                LOGGER.info("New amount = " + saving.getBalance().getAmount());
+            } else {
+                saving.getBalance().increaseAmount(transactionRequest.getAmount());
+                LOGGER.info("New amount = " + saving.getBalance().getAmount());
+            }
+            savingRepository.save(saving);
+            return;
+        }
+        if(account instanceof CreditCard){
+            ((CreditCard) account).check();
+            CreditCard creditCard = (CreditCard) account;
+            LOGGER.info("CreditCard Account Found");
+            creditCard.setBalance( new Money (creditCard.getBalance().increaseAmount(transactionRequest.getAmount())) );
+            creditCardRepository.save(creditCard);
+            LOGGER.info("New amount = " + creditCard.getBalance().getAmount());
+            return;
+        }
+        throw new WrongInput("Not Found");
     }
 
     @Secured({"ROLE_ADMIN"})

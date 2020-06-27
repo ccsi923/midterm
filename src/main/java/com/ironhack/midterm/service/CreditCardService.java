@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,12 +42,15 @@ public class CreditCardService {
     private RoleRepository roleRepository;
 
     @Secured({"ROLE_ADMIN"})
-    public List<CreditCardVM> findAll(){
+    public List<CreditCardVM> findAll() {
         LOGGER.info("[INIT] - findAll");
-        List<CreditCardVM> creditCardVMS = creditCardRepository.findAll().stream().map(
-                creditCard -> new CreditCardVM(creditCard.getId(),creditCard.getBalance(), creditCard.getPrimaryOwner(), creditCard.getSecondaryOwner(),
-                        creditCard.getCreditLimit(), creditCard.getInterestRate(), creditCard.getPenaltyFee())
-        ).collect(Collectors.toList());
+        List<CreditCardVM> creditCardVMS = new ArrayList<>();
+                creditCardRepository.findAll().forEach(
+                creditCard -> {
+                    creditCardVMS.add(new CreditCardVM(creditCard.getId(), creditCard.getBalance(),
+                            creditCard.getPrimaryOwner(), creditCard.getSecondaryOwner(),
+                            creditCard.getCreditLimit(), creditCard.getInterestRate(), creditCard.getPenaltyFee()));
+                });
         LOGGER.info("[END] - findAll");
         return creditCardVMS;
     }

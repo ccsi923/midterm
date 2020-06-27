@@ -1,6 +1,7 @@
 package com.ironhack.midterm.dto;
 
 import com.ironhack.midterm.enums.Status;
+import com.ironhack.midterm.model.Account;
 import com.ironhack.midterm.model.Money;
 import com.ironhack.midterm.model.users.AccountHolder;
 import lombok.Data;

@@ -99,9 +99,7 @@ class ThirdPartyControllerTest {
                 accountHolder, null, new BigDecimal("40"), Status.ACTIVE);
         studentCheckingRepository.save(studentChecking);
 
-
         /** SAVING **/
-
         Saving saving = new Saving(new Money(new BigDecimal("1000")), "secret",
                 accountHolder,null, new BigDecimal("40"), Status.ACTIVE,
                 new BigDecimal("1000"), new BigDecimal("0.10"));

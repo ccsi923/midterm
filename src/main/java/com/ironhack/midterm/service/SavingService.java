@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,11 +48,14 @@ public class SavingService {
     @Secured({"ROLE_ADMIN"})
     public List<SavingVM> findAll(){
         LOGGER.info("[INIT] - findAll");
-        List<SavingVM> savingVMS = savingRepository.findAll().stream().map(
-                saving -> new SavingVM(saving.getId(),saving.getBalance(), saving.getPrimaryOwner(),
+        List<SavingVM> savingVMS = new ArrayList<>();
+
+        savingRepository.findAll().forEach(
+                saving -> {
+                    savingVMS.add(new SavingVM(saving.getId(),saving.getBalance(), saving.getPrimaryOwner(),
                         saving.getSecondaryOwner(), saving.getMinimumBalance(), saving.getPenaltyFee(),
-                        saving.getStatus(), saving.getInterestRate(), saving.isPenalty())
-        ).collect(Collectors.toList());
+                        saving.getStatus(), saving.getInterestRate(), saving.isPenalty()));
+                });
         LOGGER.info("[END] - findAll");
         return savingVMS;
     }

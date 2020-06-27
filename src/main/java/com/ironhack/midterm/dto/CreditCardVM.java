@@ -1,6 +1,7 @@
 package com.ironhack.midterm.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ironhack.midterm.model.Account;
 import com.ironhack.midterm.model.Money;
 import com.ironhack.midterm.model.users.AccountHolder;
 import lombok.Data;
@@ -21,7 +22,9 @@ public class CreditCardVM {
 
     public CreditCardVM(){}
 
-    public CreditCardVM(Integer id, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal creditLimit, BigDecimal interestRate, BigDecimal penaltyFee) {
+    public CreditCardVM(Integer id, Money balance, AccountHolder primaryOwner,
+                        AccountHolder secondaryOwner, BigDecimal creditLimit,
+                        BigDecimal interestRate, BigDecimal penaltyFee) {
         this.id = id;
         this.balance = balance;
         this.primaryOwner = primaryOwner;

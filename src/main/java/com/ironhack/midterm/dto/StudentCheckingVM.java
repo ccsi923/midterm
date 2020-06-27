@@ -1,6 +1,7 @@
 package com.ironhack.midterm.dto;
 
 import com.ironhack.midterm.enums.Status;
+import com.ironhack.midterm.model.Account;
 import com.ironhack.midterm.model.Money;
 import com.ironhack.midterm.model.users.AccountHolder;
 import lombok.Data;
@@ -17,13 +18,13 @@ public class StudentCheckingVM {
     private BigDecimal penaltyFee;
     private Status status;
 
-    public StudentCheckingVM(Integer id, Money balance, String secretKey, AccountHolder primaryOwner,
-                             AccountHolder secondaryOwner, BigDecimal penaltyFee, Status status) {
+    public StudentCheckingVM(Integer id, Money balance, String secretKey, AccountHolder primary,
+                             AccountHolder secondary, BigDecimal penaltyFee, Status status) {
         this.id = id;
         this.balance = balance;
         this.secretKey = secretKey;
-        this.primaryOwner = primaryOwner;
-        this.secondaryOwner = secondaryOwner;
+        this.primaryOwner = primary;
+        this.secondaryOwner = secondary;
         this.penaltyFee = penaltyFee;
         this.status = status;
     }

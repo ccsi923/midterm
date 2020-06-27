@@ -40,8 +40,6 @@ public class AccountUserControllerImpl {
     public BalanceVM findBalanceByAcountId(@AuthenticationPrincipal User user, @PathVariable("id") Integer accountId){
         return accountUserService.findBalanceByUserAndId(user, accountId);
     }
-
-
     @PostMapping("/transaction")
     @ApiOperation(value = "Make a transaction",
             notes = "Make a transaction",
@@ -51,5 +49,4 @@ public class AccountUserControllerImpl {
                                     @RequestBody @Valid TransactionAccountUserRequest transactionRequest){
         return accountUserService.transactions( user , transactionRequest);
     }
-
 }
