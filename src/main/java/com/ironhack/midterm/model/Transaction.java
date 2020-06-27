@@ -1,8 +1,12 @@
 package com.ironhack.midterm.model;
 
+import lombok.Data;
+
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table
 public class Transaction {
@@ -10,7 +14,6 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
 
     private LocalDateTime dateTransaction;
 
@@ -21,29 +24,21 @@ public class Transaction {
     @JoinColumn(name = "receptorId")
     private Account accountReceptor;
 
-    public Transaction() {
-    }
+    private BigDecimal amount;
 
-    public Transaction(Account accountSender, Account accountReceptor) {
-        this.accountSender = accountSender;
-        this.accountReceptor = accountReceptor;
-        this.dateTransaction = LocalDateTime.now();
+    public Transaction() {
     }
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public LocalDateTime getDateTransaction() {
         return dateTransaction;
     }
 
-    public void setDateTransaction(LocalDateTime dateTransaction) {
-        this.dateTransaction = dateTransaction;
+    public void setDateTransaction() {
+        this.dateTransaction = LocalDateTime.now();
     }
 
     public Account getAccountSender() {
@@ -60,5 +55,13 @@ public class Transaction {
 
     public void setAccountReceptor(Account accountReceptor) {
         this.accountReceptor = accountReceptor;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal ammount) {
+        this.amount = ammount;
     }
 }

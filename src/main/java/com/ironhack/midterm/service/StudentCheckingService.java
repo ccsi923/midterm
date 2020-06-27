@@ -1,13 +1,13 @@
 package com.ironhack.midterm.service;
 
-import com.ironhack.midterm.dto.CreditCardMV;
-import com.ironhack.midterm.dto.StudentCheckingMV;
+import com.ironhack.midterm.dto.StudentCheckingVM;
 import com.ironhack.midterm.repository.RoleRepository;
 import com.ironhack.midterm.repository.StudentCheckingRepository;
 import com.ironhack.midterm.repository.UserRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,14 +28,14 @@ public class StudentCheckingService {
     @Autowired
     private RoleRepository roleRepository;
 
-
-    public List<StudentCheckingMV> findAll(){
+    @Secured({"ROLE_ADMIN"})
+    public List<StudentCheckingVM> findAll(){
         LOGGER.info("[INIT] - findAll");
-        List<StudentCheckingMV> studentCheckingMVS = studentCheckingRepository.findAll().stream().map(
-                studentChecking -> new StudentCheckingMV(studentChecking.getId(),studentChecking.getBalance(),studentChecking.getSecretKey(), studentChecking.getPrimaryOwner(),
+        List<StudentCheckingVM> studentCheckingVMS = studentCheckingRepository.findAll().stream().map(
+                studentChecking -> new StudentCheckingVM(studentChecking.getId(),studentChecking.getBalance(),studentChecking.getSecretKey(), studentChecking.getPrimaryOwner(),
                         studentChecking.getSecondaryOwner(), studentChecking.getPenaltyFee(), studentChecking.getStatus())
         ).collect(Collectors.toList());
         LOGGER.info("[END] - findAll");
-        return studentCheckingMVS;
+        return studentCheckingVMS;
     }
 }

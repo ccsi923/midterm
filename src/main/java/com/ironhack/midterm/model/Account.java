@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Data
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Account {
@@ -46,47 +46,6 @@ public abstract class Account {
         this.secondaryOwner = secondaryOwner;
         this.penaltyFee = penaltyFee;
 
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Money getBalance() {
-        return balance;
-    }
-
-    public void setBalance(Money balance) {
-        this.balance = balance;
-    }
-
-
-    public AccountHolder getPrimaryOwner() {
-        return primaryOwner;
-    }
-
-    public void setPrimaryOwner(AccountHolder primaryOwner) {
-        this.primaryOwner = primaryOwner;
-    }
-
-    public AccountHolder getSecondaryOwner() {
-        return secondaryOwner;
-    }
-
-    public void setSecondaryOwner(AccountHolder secondaryOwner) {
-        this.secondaryOwner = secondaryOwner;
-    }
-
-    public BigDecimal getPenaltyFee() {
-        return penaltyFee;
-    }
-
-    public void setPenaltyFee(BigDecimal penaltyFee) {
-        this.penaltyFee = penaltyFee;
     }
 
 }

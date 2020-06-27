@@ -2,22 +2,20 @@ package com.ironhack.midterm.dto;
 
 import com.ironhack.midterm.enums.Status;
 import com.ironhack.midterm.model.users.AccountHolder;
+import com.ironhack.midterm.model.users.AccountUser;
 import com.ironhack.midterm.model.users.Address;
+import lombok.Data;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-
+@Data
 public class AccountRequest {
 
     @NotNull
     private BigDecimal amount;
     @Valid
     private String secretKey;
-
-    private String userNamePrimary;
-
-    private String userNameSecondary;
 
     @Valid
     private AccountHolder primaryOwner;
@@ -34,101 +32,5 @@ public class AccountRequest {
 
     public AccountRequest(){}
 
-    //private Status status; -->Status Active when you create one
 
-
-    public BigDecimal getInterestRate() {
-        return interestRate;
-    }
-
-    public void setInterestRate(BigDecimal interestRate) {
-        this.interestRate = interestRate;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public String getSecretKey() {
-        return secretKey;
-    }
-
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
-    }
-
-    public AccountHolder getPrimaryOwner() {
-        return primaryOwner;
-    }
-
-    public void setPrimaryOwner(AccountHolder primaryOwner) {
-        this.primaryOwner = primaryOwner;
-    }
-
-    public AccountHolder getSecondaryOwner() {
-        return secondaryOwner;
-    }
-
-    public void setSecondaryOwner(AccountHolder secondaryOwner) {
-        this.secondaryOwner = secondaryOwner;
-    }
-
-    public BigDecimal getCreditLimit() {
-        return creditLimit;
-    }
-
-    public void setCreditLimit(BigDecimal creditLimit) {
-        this.creditLimit = creditLimit;
-    }
-
-    public BigDecimal getMinimumBalance() {
-        return minimumBalance;
-    }
-
-    public void setMinimumBalance(BigDecimal minimumBalance) {
-        this.minimumBalance = minimumBalance;
-    }
-
-
-    public BigDecimal getMonthlyMaintenanceFee() {
-        return monthlyMaintenanceFee;
-    }
-
-    public void setMonthlyMaintenanceFee(BigDecimal monthlyMaintenanceFee) {
-        this.monthlyMaintenanceFee = monthlyMaintenanceFee;
-    }
-
-    public String getUserNamePrimary() {
-        return userNamePrimary;
-    }
-
-    public void setUserNamePrimary(String userNamePrimary) {
-        this.userNamePrimary = userNamePrimary;
-    }
-
-    public String getUserNameSecondary() {
-        return userNameSecondary;
-    }
-
-    public void setUserNameSecondary(String userNameSecondary) {
-        this.userNameSecondary = userNameSecondary;
-    }
-
-    @Override
-    public String toString() {
-        return "AccountDto{" +
-                "amount=" + amount +
-                ", secretKey='" + secretKey + '\'' +
-                ", primaryOwner=" + primaryOwner +
-                ", secondaryOwner=" + secondaryOwner +
-                ", minimumBalance=" + minimumBalance +
-                ", monthlyMaintenanceFee=" + monthlyMaintenanceFee +
-                ", interestRate=" + interestRate +
-                ", creditLimit=" + creditLimit +
-                '}';
-    }
 }

@@ -1,7 +1,7 @@
 package com.ironhack.midterm.service;
 
 import com.ironhack.midterm.dto.AccountRequest;
-import com.ironhack.midterm.dto.CheckingMV;
+import com.ironhack.midterm.dto.CheckingVM;
 import com.ironhack.midterm.enums.Status;
 import com.ironhack.midterm.exceptions.WrongInput;
 import com.ironhack.midterm.model.Checking;
@@ -14,6 +14,7 @@ import com.ironhack.midterm.repository.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -46,18 +47,19 @@ public class CheckingService {
     @Autowired
     private RoleRepository roleRepository;
 
-    public List<CheckingMV> findAll(){
+    @Secured({"ROLE_ADMIN"})
+    public List<CheckingVM> findAll(){
         LOGGER.info("[INIT] - findAll");
-        List<CheckingMV> checkingMVS = checkingReposiroty.findAll().stream().map(
-                checking -> new CheckingMV(checking.getId(),checking.getBalance(),
+        List<CheckingVM> checkingVMS = checkingReposiroty.findAll().stream().map(
+                checking -> new CheckingVM(checking.getId(),checking.getBalance(),
                         checking.getPrimaryOwner(), checking.getSecondaryOwner(), checking.getPenaltyFee(),
                         checking.getStatus(), checking.getMinimumBalance(), checking.getMonthlyMaintenanceFee())
         ).collect(Collectors.toList());
         LOGGER.info("[END] - findAll");
-        return checkingMVS;
+        return checkingVMS;
     }
-
-    public CheckingMV create(Integer primaryId, Integer secondaryId, AccountRequest accountRequest) {
+    @Secured({"ROLE_ADMIN"})
+    public CheckingVM create(Integer primaryId, Integer secondaryId, AccountRequest accountRequest) {
 
         LOGGER.info("[INIT] - create");
 
@@ -80,26 +82,27 @@ public class CheckingService {
         }
         if (primaryId == -1) {
             if (accountRequest.getPrimaryOwner() != null) {
-                LOGGER.info("Searching user with name " + accountRequest.getUserNamePrimary());
-                Optional<User> found = userRepo.findByUsername(accountRequest.getUserNamePrimary());
+                LOGGER.info("Searching user with name " + accountRequest.getPrimaryOwner().getAccountUser().getUsername());
+                Optional<User> found = userRepo.findByUsername(accountRequest.getPrimaryOwner().getAccountUser().getUsername());
 
                 if (found.isEmpty()) {
-                    LOGGER.info("User with name " + accountRequest.getUserNamePrimary() + " not found");
-
-                    accountHolderRepository.save(accountRequest.getPrimaryOwner());
-                    LOGGER.info("User with name " + accountRequest.getUserNamePrimary() + " has been added");
+                    LOGGER.info("User with name " + accountRequest.getPrimaryOwner().getAccountUser().getUsername() + " not found");
 
                     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                    AccountUser newUser = new AccountUser(accountRequest.getUserNamePrimary(), passwordEncoder.encode(accountRequest.getPrimaryOwner().getPassword()));
+                    AccountUser newUser = new AccountUser(accountRequest.getPrimaryOwner().getAccountUser().getUsername(),
+                            passwordEncoder.encode(accountRequest.getPrimaryOwner().getAccountUser().getPassword()),
+                            accountRequest.getPrimaryOwner());
+                    accountRequest.getPrimaryOwner().setAccountUser(newUser);
                     userRepo.save(newUser);
-                    LOGGER.info("User with name " + accountRequest.getUserNamePrimary() + " has been added");
+                    accountHolderRepository.save(accountRequest.getPrimaryOwner());
+                    LOGGER.info("User with name " + accountRequest.getPrimaryOwner().getAccountUser().getUsername() + " has been added");
 
                     Role role = new Role("ROLE_ACCOUNTHOLDER", newUser);
                     roleRepository.save(role);
 
                 } else {
                     LOGGER.error("The name of user " + found.get().getUsername() + " already exists");
-                    throw new WrongInput("The username " + accountRequest.getUserNamePrimary() + " already exist");
+                    throw new WrongInput("The username " + accountRequest.getPrimaryOwner().getAccountUser().getUsername() + " already exist");
                 }
 
             } else {
@@ -110,17 +113,23 @@ public class CheckingService {
 
         if (secondaryId == -1) {
             if (accountRequest.getSecondaryOwner() != null) {
-                Optional<User> found = userRepo.findByUsername(accountRequest.getUserNameSecondary());
+                Optional<User> found = userRepo.findByUsername(accountRequest.getSecondaryOwner().getAccountUser().getUsername());
                 if (found.isEmpty()) {
-                    accountHolderRepository.save(accountRequest.getSecondaryOwner());
+                    LOGGER.info("User with name " + accountRequest.getSecondaryOwner().getAccountUser().getUsername() + " not found");
+
                     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                    AccountUser newUser = new AccountUser(accountRequest.getUserNameSecondary(), passwordEncoder.encode(accountRequest.getSecondaryOwner().getPassword()));
+                    AccountUser newUser = new AccountUser(accountRequest.getSecondaryOwner().getAccountUser().getUsername(),
+                            passwordEncoder.encode(accountRequest.getSecondaryOwner().getAccountUser().getPassword()),
+                            accountRequest.getSecondaryOwner());
+                    accountRequest.getSecondaryOwner().setAccountUser(newUser);
                     userRepo.save(newUser);
+                    accountHolderRepository.save(accountRequest.getSecondaryOwner());
                     Role role = new Role("ROLE_ACCOUNTHOLDER", newUser);
                     roleRepository.save(role);
 
                 } else {
-                    throw new WrongInput("The username " + accountRequest.getUserNameSecondary() + " already exist");
+                    LOGGER.error("The username " + accountRequest.getSecondaryOwner().getAccountUser().getUsername() + " already exist");
+                    throw new WrongInput("The username " + accountRequest.getSecondaryOwner().getAccountUser().getUsername() + " already exist");
                 }
             }
         }
@@ -131,11 +140,12 @@ public class CheckingService {
             LOGGER.info("Saving -> account Checking Account");
             studentCheckingRepository.save(studentChecking);
             LOGGER.info("[END] - create");
-            return new CheckingMV(studentChecking.getId(), studentChecking.getBalance(), studentChecking.getPrimaryOwner(), studentChecking.getSecondaryOwner(),
+            return new CheckingVM(studentChecking.getId(), studentChecking.getBalance(), studentChecking.getPrimaryOwner(), studentChecking.getSecondaryOwner(),
                     studentChecking.getPenaltyFee(), studentChecking.getStatus(), null, null);
         } else {
 
             if(accountRequest.getAmount().compareTo(new BigDecimal("250")) < 0){
+                LOGGER.error("Amount to create account must be greater than 250");
                 throw new WrongInput("Amount to create account must be greater than 250");
             } else {
 
@@ -145,7 +155,7 @@ public class CheckingService {
             LOGGER.info("Saving -> account Checking Account");
             checkingReposiroty.save(checking);
             LOGGER.info("[END] - create");
-            return new CheckingMV(checking.getId(), checking.getBalance(), checking.getPrimaryOwner(), checking.getSecondaryOwner(),
+            return new CheckingVM(checking.getId(), checking.getBalance(), checking.getPrimaryOwner(), checking.getSecondaryOwner(),
                     checking.getPenaltyFee(), checking.getStatus(), checking.getMinimumBalance(), checking.getMonthlyMaintenanceFee());
            }
       }

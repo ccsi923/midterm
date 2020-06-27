@@ -1,8 +1,14 @@
 package com.ironhack.midterm.model.users;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.DateSerializer;
 import com.ironhack.midterm.model.Account;
 import com.ironhack.midterm.model.Saving;
+import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.data.repository.cdi.Eager;
@@ -10,13 +16,14 @@ import org.springframework.data.repository.cdi.Eager;
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-
+@Data
 @Entity
 @Table
 public class AccountHolder {
@@ -26,12 +33,12 @@ public class AccountHolder {
     private Integer id;
     @NotNull
     private String name;
+
     @NotNull
     private LocalDate birth;
-    @NotNull
-    private String password;
-    //@OneToOne
-    //private AccountUser accountUser;
+
+    @OneToOne
+    private AccountUser accountUser;
 
 
     @Valid
@@ -49,8 +56,6 @@ public class AccountHolder {
     })
     private Address mailingAddress;
 
-    private boolean login;
-
     @OneToMany(mappedBy = "primaryOwner", fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Account> primaryAccounts = new ArrayList<>();
@@ -63,110 +68,21 @@ public class AccountHolder {
     public AccountHolder(){}
 
     public AccountHolder(@NotNull String name, @NotNull LocalDate birth,
-                         @NotNull Address primaryAddress, @NotNull String password
+                         @NotNull Address primaryAddress
                          ) {
         this.name = name;
         this.birth = birth;
         this.primaryAddress = primaryAddress;
         this.mailingAddress = null;
-        this.login = false;
-        this.password = password;
 
     }
-
-    public AccountHolder(@NotNull String name, @NotNull LocalDate birth, @NotNull String password,
+    public AccountHolder(@NotNull String name, @NotNull LocalDate birth,
                          @NotNull Address primaryAddress, Address mailingAddress) {
         this.name = name;
         this.birth = birth;
         this.primaryAddress = primaryAddress;
         this.mailingAddress = mailingAddress;
-        this.login = false;
-        this.password = password;
 
     }
 
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isLogged(){
-        return login;
-    }
-
-    public void setLogin(boolean logged){
-        this.login = logged;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public LocalDate getBirth() {
-        return birth;
-    }
-
-    public void setBirth(LocalDate birth) {
-        this.birth = birth;
-    }
-
-    public Address getPrimaryAddress() {
-        return primaryAddress;
-    }
-
-    public void setPrimaryAddress(Address primaryAddress) {
-        this.primaryAddress = primaryAddress;
-    }
-
-    public Address getMailingAddress() {
-        return mailingAddress;
-    }
-
-    public void setMailingAddress(Address mailingAddress) {
-        this.mailingAddress = mailingAddress;
-    }
-
-    public List<Account> getPrimaryAccounts() {
-        return primaryAccounts;
-    }
-
-    public void setPrimaryAccounts(List<Account> primaryAccounts) {
-        this.primaryAccounts = primaryAccounts;
-    }
-
-    public List<Account> getSecondaryAccounts() {
-        return secondaryAccounts;
-    }
-
-    public void setSecondaryAccounts(List<Account> secondaryAccounts) {
-        this.secondaryAccounts = secondaryAccounts;
-    }
-
-    //public AccountUser getAccountUser() {
-      //  return accountUser;
-    //}
-
-    //public void setAccountUser(AccountUser accountUser) {
-      //  this.accountUser = accountUser;
-    //}
-
-    //public boolean isLogin() {
-      //  return login;
-    //}
 }

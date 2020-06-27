@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-
+@Data
 public class UserRequest {
 
     @NotNull
@@ -22,21 +22,5 @@ public class UserRequest {
         this.password = password;
     }
 
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
 }

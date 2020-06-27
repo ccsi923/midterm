@@ -1,9 +1,11 @@
 package com.ironhack.midterm.dto;
 
 import com.ironhack.midterm.model.Money;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
+@Data
 public class AccountAdminAccess {
 
     private Integer id;
@@ -16,27 +18,4 @@ public class AccountAdminAccess {
         this.balance = balance;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Money getBalance() {
-        return balance;
-    }
-
-    public void setBalance(Money balance) {
-        this.balance = balance;
-    }
 }

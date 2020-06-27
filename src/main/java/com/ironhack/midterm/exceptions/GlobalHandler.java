@@ -12,11 +12,21 @@ public class GlobalHandler {
 
     @ExceptionHandler(WrongInput.class)
     public void handWrongInput(WrongInput e, HttpServletResponse response) throws IOException {
-        response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler(NotEnoughFunds.class)
-    public void handNotEnoughFunds(WrongInput e, HttpServletResponse response) throws IOException {
-        response.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+    public void handNotEnoughFunds(NotEnoughFunds e, HttpServletResponse response) throws IOException {
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(StatusFrozenException.class)
+    public void handStatusFrozenException(StatusFrozenException e, HttpServletResponse response) throws IOException {
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(IllegalTransactionException.class)
+    public void handIllegalTransactionException(IllegalTransactionException e, HttpServletResponse response) throws IOException {
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
     }
 }

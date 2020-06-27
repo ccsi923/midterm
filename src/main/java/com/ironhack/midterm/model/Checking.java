@@ -4,6 +4,7 @@ package com.ironhack.midterm.model;
 import com.ironhack.midterm.enums.Status;
 import com.ironhack.midterm.model.users.AccountHolder;
 import com.ironhack.midterm.service.CreditCardService;
+import lombok.Data;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,14 +13,15 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
-
+@Data
 @Entity
 @Table
 public class Checking extends Account {
 
     private static final Logger LOGGER = LogManager.getLogger(Checking.class);
-
 
     private BigDecimal minimumBalance;
     private BigDecimal monthlyMaintenanceFee;
@@ -27,6 +29,7 @@ public class Checking extends Account {
     @Enumerated(value = EnumType.STRING)
     private Status status;
     private boolean penalty;
+    private LocalDateTime updateDate;
 
     public Checking(){}
 
@@ -40,46 +43,21 @@ public class Checking extends Account {
         this.monthlyMaintenanceFee = monthlyMaintenanceFee;
         this.status = status;
         this.penalty = false;
+        this.updateDate = LocalDateTime.now();
     }
 
-    public String getSecretKey() {
-        return secretKey;
-    }
+    public void check(){
 
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
-    }
+        int months =  (int) updateDate.until(LocalDateTime.now(), ChronoUnit.MONTHS);
 
-    public Status getStatus() {
-        return status;
-    }
+        if(months >= 0){
+            BigDecimal decreseValue = balance.decreaseAmount(monthlyMaintenanceFee
+                    .multiply(new BigDecimal(months)));
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public BigDecimal getMinimumBalance() {
-        return minimumBalance;
-    }
-
-    public void setMinimumBalance(BigDecimal minimumBalance) {
-        this.minimumBalance = minimumBalance;
-    }
-
-    public BigDecimal getMonthlyMaintenanceFee() {
-        return monthlyMaintenanceFee;
-    }
-
-    public void setMonthlyMaintenanceFee(BigDecimal monthlyMaintenanceFee) {
-        this.monthlyMaintenanceFee = monthlyMaintenanceFee;
-    }
-
-    public boolean isPenalty() {
-        return penalty;
-    }
-
-    public void setPenalty(boolean penalty) {
-        this.penalty = penalty;
+            updateDate = updateDate.plusYears(Math.floorDiv(months, 12));
+            updateDate = updateDate.plusMonths(months % 12);
+            LOGGER.info("[INFO] - : Monthly Maintenance Fee reduced: " + decreseValue);
+        }
     }
 
 }

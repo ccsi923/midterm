@@ -1,14 +1,18 @@
 package com.ironhack.midterm.model;
 
 import com.ironhack.midterm.model.users.AccountHolder;
+import lombok.Data;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.thymeleaf.standard.processor.StandardHrefTagProcessor;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+@Data
 @Entity
 @Table
 public class CreditCard extends Account {
@@ -31,87 +35,27 @@ public class CreditCard extends Account {
         this.updateDate = LocalDateTime.now();
     }
 
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Money getBalance() {
-        return balance;
-    }
-
-    public void setBalance(Money balance) {
-        this.balance = balance;
-    }
-
-    public AccountHolder getPrimaryOwner() {
-        return primaryOwner;
-    }
-
-    public void setPrimaryOwner(AccountHolder primaryOwner) {
-        this.primaryOwner = primaryOwner;
-    }
-
-    public AccountHolder getSecondaryOwner() {
-        return secondaryOwner;
-    }
-
-    public void setSecondaryOwner(AccountHolder secondaryOwner) {
-        this.secondaryOwner = secondaryOwner;
-    }
-
-    public BigDecimal getCreditLimit() {
-        return creditLimit;
-    }
-
-    public void setCreditLimit(BigDecimal creditLimit) {
-        this.creditLimit = creditLimit;
-    }
-
-    public BigDecimal getInterestRate() {
-        return interestRate;
-    }
-
-    public void setInterestRate(BigDecimal interestRate) {
-        this.interestRate = interestRate;
-    }
-
-    public BigDecimal getPenaltyFee() {
-        return penaltyFee;
-    }
-
-    public void setPenaltyFee(BigDecimal penaltyFee) {
-        this.penaltyFee = penaltyFee;
-    }
-
-    public LocalDateTime getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(LocalDateTime updateDate) {
-        this.updateDate = updateDate;
-    }
-
     public void check(){
 
-        int months =  (int) updateDate.until(LocalDateTime.now(), ChronoUnit.MONTHS);
+        if(balance.getAmount().compareTo(new BigDecimal("0")) < 0){
+            LOGGER.info("It cannot update because balance is negative");
+            return;
+        } else {
 
-        if(months > 0){
-            BigDecimal addValue = balance.getAmount()
-                    .multiply(interestRate
-                            .divide(new BigDecimal("12"))
-                            .add(new BigDecimal("1"))
-                            .pow(months));
+            int months = (int) updateDate.until(LocalDateTime.now(), ChronoUnit.MONTHS);
 
-            setBalance(new Money (addValue));
-            updateDate = updateDate.plusYears(Math.floorDiv(months, 12));
-            updateDate = updateDate.plusMonths(months % 12);
-            LOGGER.debug("[INFO] - Annual interest added: " + addValue);
-            LOGGER.info("[INFO] - Annual interest added: " + addValue);
+            if (months >= 0) {
+                BigDecimal addValue = balance.getAmount()
+                        .multiply(interestRate
+                                .divide(new BigDecimal("12"),16, RoundingMode.HALF_EVEN)
+                                .add(new BigDecimal("1"))
+                                .pow(months));
+
+                setBalance(new Money(addValue));
+                updateDate = updateDate.plusYears(Math.floorDiv(months, 12));
+                updateDate = updateDate.plusMonths(months % 12);
+                LOGGER.info("[INFO] - Annual interest added: " + addValue);
+            }
         }
     }
 

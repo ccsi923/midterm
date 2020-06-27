@@ -44,4 +44,13 @@ public class TransactionRequest {
     public void setAccountType(String accountType) {
         this.accountType = accountType;
     }
+
+    @Override
+    public String toString() {
+        return "TransactionRequest{" +
+                "amount=" + amount +
+                ", accountId=" + accountId +
+                ", accountType='" + accountType + '\'' +
+                '}';
+    }
 }

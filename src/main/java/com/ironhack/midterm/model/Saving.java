@@ -3,6 +3,7 @@ package com.ironhack.midterm.model;
 import com.ironhack.midterm.enums.Status;
 import com.ironhack.midterm.exceptions.WrongInput;
 import com.ironhack.midterm.model.users.AccountHolder;
+import lombok.Data;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 
+@Data
 @Entity
 @Table
 public class Saving extends Account{
@@ -48,87 +50,30 @@ public class Saving extends Account{
         this.secretKey = secretKey;
     }
 
-    public BigDecimal getMinimumBalance() {
-        return minimumBalance;
-    }
-
-    public void setMinimumBalance(BigDecimal minimumBalance) {
-        this.minimumBalance = minimumBalance;
-    }
-
-    public BigDecimal getInterestRate() {
-        return interestRate;
-    }
-
-    public void setInterestRate(BigDecimal interestRate) {
-        this.interestRate = interestRate;
-    }
-
-    public LocalDateTime getReferenceDate() {
-        return referenceDate;
-    }
-
-    public void setReferenceDate(LocalDateTime referenceDate) {
-        this.referenceDate = referenceDate;
-    }
-
-    public boolean isPenalty() {
-        return penalty;
-    }
-
-    public void setPenalty(boolean penalty) {
-        this.penalty = penalty;
-    }
-
-    public String getSecretKey() {
-        return secretKey;
-    }
-
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
 
     public void check() {
 
-        int years = (int) referenceDate.until(LocalDateTime.now(), ChronoUnit.YEARS);
+        if (balance.getAmount().compareTo(new BigDecimal("0")) < 0) {
+            LOGGER.info("It cannot update because balance is negative");
+            return;
+        } else {
+            int years = (int) referenceDate.until(LocalDateTime.now(), ChronoUnit.YEARS);
 
-        if ( years >= 0) {
+            if (years >= 0) {
 
-            BigDecimal addValue = balance.getAmount()
+                BigDecimal addValue = balance.getAmount()
                         .multiply(getInterestRate()
-                        .add(new BigDecimal("1"))
-                        .pow(years));
+                                .add(new BigDecimal("1"))
+                                .pow(years));
 
                 setBalance(new Money(addValue));
-            referenceDate = referenceDate.plusYears(years);
-            LOGGER.info("[INFO] - Annual interest added: " + addValue);
+                referenceDate = referenceDate.plusYears(years);
+                LOGGER.info("[INFO] - Annual interest added: " + addValue);
 
             }
         }
-
-
-    @Override
-    public String toString() {
-        return "Saving{" +
-                "minimumBalance=" + minimumBalance +
-                ", interestRate=" + interestRate +
-                ", id=" + id +
-                ", balance=" + balance +
-                ", secretKey='" + secretKey + '\'' +
-                ", primaryOwner=" + primaryOwner +
-                ", secondaryOwner=" + secondaryOwner +
-                ", penaltyFee=" + penaltyFee +
-                ", status=" + status +
-                '}';
     }
+
 }
 
 

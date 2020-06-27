@@ -1,7 +1,7 @@
 package com.ironhack.midterm.service;
 
 import com.ironhack.midterm.dto.AccountRequest;
-import com.ironhack.midterm.dto.SavingMV;
+import com.ironhack.midterm.dto.SavingVM;
 import com.ironhack.midterm.enums.Status;
 import com.ironhack.midterm.exceptions.WrongInput;
 import com.ironhack.midterm.model.Money;
@@ -32,8 +32,6 @@ public class SavingService {
 
     private static final Logger LOGGER = LogManager.getLogger(SavingService.class);
 
-
-
     @Autowired
     private SavingRepository savingRepository;
 
@@ -47,18 +45,18 @@ public class SavingService {
     private RoleRepository roleRepository;
 
     @Secured({"ROLE_ADMIN"})
-    public List<SavingMV> findAll(){
+    public List<SavingVM> findAll(){
         LOGGER.info("[INIT] - findAll");
-        List<SavingMV> savingMVS = savingRepository.findAll().stream().map(
-                saving -> new SavingMV(saving.getId(),saving.getBalance(), saving.getPrimaryOwner(),
+        List<SavingVM> savingVMS = savingRepository.findAll().stream().map(
+                saving -> new SavingVM(saving.getId(),saving.getBalance(), saving.getPrimaryOwner(),
                         saving.getSecondaryOwner(), saving.getMinimumBalance(), saving.getPenaltyFee(),
                         saving.getStatus(), saving.getInterestRate(), saving.isPenalty())
         ).collect(Collectors.toList());
         LOGGER.info("[END] - findAll");
-        return savingMVS;
+        return savingVMS;
     }
-
-    public SavingMV create(Integer primaryId, Integer secondaryId, AccountRequest accountRequest){
+    @Secured({"ROLE_ADMIN"})
+    public SavingVM create(Integer primaryId, Integer secondaryId, AccountRequest accountRequest){
 
         LOGGER.info("[INIT] - create");
 
@@ -79,52 +77,66 @@ public class SavingService {
                   accountRequest.setSecondaryOwner(accountHolderRepository.findById(secondaryId).get());
                 }
         }
-        if (primaryId == -1){
-             if (accountRequest.getPrimaryOwner() != null) {
-                 Optional<User> found = userRepo.findByUsername(accountRequest.getUserNamePrimary());
-
-                 if (found.isEmpty()) {
-                     accountHolderRepository.save(accountRequest.getPrimaryOwner());
-                     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                     AccountUser newUser = new AccountUser(accountRequest.getUserNamePrimary(), passwordEncoder.encode(accountRequest.getPrimaryOwner().getPassword()));
-                     userRepo.save(newUser);
-                     Role role = new Role("ROLE_ACCOUNTHOLDER", newUser);
-                     roleRepository.save(role);
-                 } else {
-                     LOGGER.error("The name of user " + found.get().getUsername() + " already exists");
-                     throw new WrongInput("The username " + accountRequest.getUserNamePrimary() + " already exist");
-                 }
-             } else {
-                 LOGGER.error("You must give a Parimary Account Holder" );
-                 throw new WrongInput("You must give a Parimary Account Holder");
-                }
-        }
-
-        if(secondaryId == -1){
-            if (accountRequest.getSecondaryOwner() != null){
-                Optional<User> found = userRepo.findByUsername(accountRequest.getUserNameSecondary());
+        if (primaryId == -1) {
+            if (accountRequest.getPrimaryOwner() != null) {
+                LOGGER.info("Searching user with name " + accountRequest.getPrimaryOwner().getAccountUser().getUsername());
+                Optional<User> found = userRepo.findByUsername(accountRequest.getPrimaryOwner().getAccountUser().getUsername());
 
                 if (found.isEmpty()) {
-                    accountHolderRepository.save(accountRequest.getSecondaryOwner());
+                    LOGGER.info("User with name " + accountRequest.getPrimaryOwner().getAccountUser().getUsername() + " not found");
+
                     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                    AccountUser newUser = new AccountUser(accountRequest.getUserNameSecondary(), passwordEncoder.encode(accountRequest.getSecondaryOwner().getPassword()));
+                    AccountUser newUser = new AccountUser(accountRequest.getPrimaryOwner().getAccountUser().getUsername(),
+                            passwordEncoder.encode(accountRequest.getPrimaryOwner().getAccountUser().getPassword()),
+                            accountRequest.getPrimaryOwner());
+                    accountRequest.getPrimaryOwner().setAccountUser(newUser);
                     userRepo.save(newUser);
+                    accountHolderRepository.save(accountRequest.getPrimaryOwner());
+                    LOGGER.info("User with name " + accountRequest.getPrimaryOwner().getAccountUser().getUsername() + " has been added");
+
                     Role role = new Role("ROLE_ACCOUNTHOLDER", newUser);
                     roleRepository.save(role);
-                }else {
+
+
+                } else {
                     LOGGER.error("The name of user " + found.get().getUsername() + " already exists");
-                    throw new WrongInput("The username " + accountRequest.getUserNameSecondary() + " already exist");
+                    throw new WrongInput("The username " + accountRequest.getPrimaryOwner().getAccountUser().getUsername() + " already exist");
                 }
 
+            } else {
+                LOGGER.error("You must give a Primary Account Holder");
+                throw new WrongInput("You must give a Primary Account Holder");
+            }
+        }
+
+        if (secondaryId == -1) {
+            if (accountRequest.getSecondaryOwner() != null) {
+                Optional<User> found = userRepo.findByUsername(accountRequest.getSecondaryOwner().getAccountUser().getUsername());
+                if (found.isEmpty()) {
+
+                    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                    AccountUser newUser = new AccountUser(accountRequest.getSecondaryOwner().getAccountUser().getUsername(),
+                            passwordEncoder.encode(accountRequest.getSecondaryOwner().getAccountUser().getPassword()),
+                            accountRequest.getSecondaryOwner());
+                    accountRequest.getSecondaryOwner().setAccountUser(newUser);
+                    userRepo.save(newUser);
+                    accountHolderRepository.save(accountRequest.getSecondaryOwner());
+                    Role role = new Role("ROLE_ACCOUNTHOLDER", newUser);
+                    roleRepository.save(role);
+
+                } else {
+                    throw new WrongInput("The username " + accountRequest.getSecondaryOwner().getAccountUser().getUsername() + " already exist");
+                }
             }
         }
 
         if(accountRequest.getAmount().compareTo(new BigDecimal("1000")) < 0){
+            LOGGER.error("Amount to create account must be greater than 1000");
             throw new WrongInput("Amount to create account must be greater than 1000");
         }
 
         if (accountRequest.getInterestRate() == null){
-            LOGGER.debug("InterestRate -> 0.0025");
+            LOGGER.info("InterestRate -> 0.0025");
             accountRequest.setInterestRate(new BigDecimal("0.0025").setScale(4, RoundingMode.HALF_EVEN));
         }
         if (accountRequest.getInterestRate().compareTo(new BigDecimal("0.5")) > 0){
@@ -132,7 +144,7 @@ public class SavingService {
             throw new WrongInput("Interest Rate must be under 0.5");
         }
         if (accountRequest.getMinimumBalance() == null){
-            LOGGER.debug("Minimum Balance -> 1000");
+            LOGGER.info("Minimum Balance -> 1000");
             accountRequest.setMinimumBalance(new BigDecimal("1000"));
         }
         if( ( accountRequest.getMinimumBalance().compareTo(new BigDecimal("100")) < 0) || ( accountRequest.getMinimumBalance().compareTo(new BigDecimal("1000")) > 0 ) ){
@@ -142,11 +154,11 @@ public class SavingService {
 
         Saving saving = new Saving(new Money(accountRequest.getAmount()), accountRequest.getSecretKey(), accountRequest.getPrimaryOwner(),
                 accountRequest.getSecondaryOwner(), new BigDecimal("40"), Status.ACTIVE, accountRequest.getMinimumBalance(), accountRequest.getInterestRate());
-        LOGGER.info("Saving -> account Saving");
+        LOGGER.info("Saving account");
         savingRepository.save(saving);
         LOGGER.info("[END] - create");
 
-        return new SavingMV(saving.getId(),saving.getBalance(), saving.getPrimaryOwner(),
+        return new SavingVM(saving.getId(),saving.getBalance(), saving.getPrimaryOwner(),
                 saving.getSecondaryOwner(), saving.getMinimumBalance(), saving.getPenaltyFee(),
                 saving.getStatus(), saving.getInterestRate(), saving.isPenalty());
     }

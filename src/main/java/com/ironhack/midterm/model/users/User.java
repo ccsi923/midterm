@@ -1,5 +1,7 @@
 package com.ironhack.midterm.model.users;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,6 +17,7 @@ public class User {
     private String password;
 
     @OneToMany(fetch= FetchType.EAGER, cascade= CascadeType.ALL, mappedBy="user")
+    @JsonIgnore
     private Set<Role> roles = new HashSet<>();
 
     public User() {

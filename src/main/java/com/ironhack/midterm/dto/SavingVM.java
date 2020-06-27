@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 
 @Data
 
-public class SavingMV {
+public class SavingVM {
 
     private Integer id;
     private Money balance;
@@ -22,7 +22,7 @@ public class SavingMV {
     private BigDecimal interestRate;
     private boolean penalty;
 
-    public SavingMV(Integer id, Money balance, AccountHolder primaryOwner,
+    public SavingVM(Integer id, Money balance, AccountHolder primaryOwner,
                     AccountHolder secondaryOwner, BigDecimal minimumBalance,
                     BigDecimal penaltyBalance, Status status, BigDecimal interestRate, boolean penalty) {
         this.id = id;
