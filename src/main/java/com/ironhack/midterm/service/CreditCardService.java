@@ -29,7 +29,6 @@ public class CreditCardService {
 
     private static final Logger LOGGER = LogManager.getLogger(CreditCardService.class);
 
-
     @Autowired
     private CreditCardRepository creditCardRepository;
 
@@ -155,7 +154,7 @@ public class CreditCardService {
         }
 
         CreditCard creditCard = new CreditCard(new Money(accountRequest.getAmount()), accountRequest.getPrimaryOwner(),
-                accountRequest.getSecondaryOwner(), accountRequest.getCreditLimit(), accountRequest.getInterestRate(),new BigDecimal("40"));
+                accountRequest.getSecondaryOwner(),new BigDecimal("40"),accountRequest.getCreditLimit() , accountRequest.getInterestRate());
 
         creditCardRepository.save(creditCard);
         LOGGER.info("[END] - create");

@@ -20,6 +20,7 @@ public class CreditCard extends Account {
     private static final Logger LOGGER = LogManager.getLogger(CreditCard.class);
 
     private BigDecimal creditLimit;
+    @Column(precision = 5, scale = 4)
     private BigDecimal interestRate;
     private LocalDateTime updateDate;
 
