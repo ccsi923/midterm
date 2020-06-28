@@ -101,7 +101,7 @@ INSERT INTO role (role, user_id) values
 
 - Default minimumBalance of 1000. Can be instantiated with other than the default but no lower than 100.
 
-- Interest on savings accounts is added to the account annually at the rate of specified interestRate per year. The method check, that controls is the interest has benn applyed, is called when the user acces into its account given its account id and when it makes a transaction. Even if you haven't accessed into your account for a long time, the first time you access the interest will be added properly.
+- Interest on savings accounts is added to the account annually at the rate of specified interestRate per year. The method check, that controls if the interest has been applyed, is called when the user acces into its account given its account id and when it makes a transaction. Even if you haven't accessed into your account for a long time, the first time you access the interest will be added properly.
 
 ## CreditCard accounts:
 
@@ -109,17 +109,16 @@ INSERT INTO role (role, user_id) values
 
 -  Default interestRate of 0.2. Can be instantiated with other than the default less than 0.2 but not lower than 0.1.
 
-- Interest on credit cards is added to the balance monthly. The method check, that controls is the interest has benn applyed, is called when the user acces into its account given its account id and when it makes a transaction. Even if you haven't accessed into your account for a long time, the first time you access the interest will be added properly.
+- Interest on credit cards is added to the balance monthly. The method check, that controls if the interest has been applyed, is called when the user acces into its account given its account id and when it makes a transaction. Even if you haven't accessed into your account for a long time, the first time you access the interest will be added properly.
 
 
 ## Checking accounts:
 
 - If the primaryOwner is less than 24, a **StudentChecking** account is created, otherwise, a regular **Checking** Account.
 
-- MinimumBalance of 250 and a mBonthlyMaintenanceFee of 12 by default.
+- MinimumBalance of 250 and a monthlyMaintenanceFee of 12 by default.
 
 ## Penalty fee:
-
 
 - The penaltyFee for all accounts is 40 and if any account drops below the minimumBalance, the penaltyFee is deducted from the balance automatically. The minumum balance that an account can stand is -40.
 
@@ -127,7 +126,7 @@ INSERT INTO role (role, user_id) values
 
 - There is a table that holds all transactions made it.
 
-- The transfer should only be processed if the account has sufficient funds. The user must provide the Primary or Secondary owner name and the id of the account id and type that should receive the transfer.
+- The transfer should only be processed if the account has sufficient funds. The user must provide the Primary or Secondary owner name and the id of the account and type that should receive the transfer.
 
 ## Fraud Detection 
 
@@ -138,21 +137,19 @@ INSERT INTO role (role, user_id) values
 - Admin is the only one who can remove Frozen status.
 
 
-
-
 ## Interpretation: 
 
 - ThirdParty creation: hashkey is taken as password, like the creations of other users. 
 
 - ThirdParty credit an debit methods: `must provide their hashed key in the header of the HTTP request`, as a user with username and pasword, when it is giving those data in the authentification, the hashedkey (password) is being given by the header of the HTTP request.
 
-- Fraud detection: the first type of fraud is interpretated as "total amount of money".
+- Fraud detection: the first type of fraud is interpretated as "total amount of money transferred".
 
 - CreditCard doesn't have status, so, it can't be frozen. Also, it hasn't got secret key, as a result, thirparty cannot  debit or credit creditcard accounts.
 
 - The creation of accounts can be make giving a existent accountHolder id. 
 
-- In he transaction endpoint the user, who is making it, should give the account id and its type (Student, CreditCard, Checking, Saving) and account id and type of the receptor either.
+- In the transaction endpoint, the user, who is making it, should give the account id and its type (Student, CreditCard, Checking, Saving) and account id and type of the receptor either.
 
 
 ## Tools
