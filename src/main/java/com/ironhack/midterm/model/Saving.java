@@ -7,10 +7,7 @@ import lombok.Data;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,6 +22,7 @@ public class Saving extends Account{
     private static final Logger LOGGER = LogManager.getLogger(Saving.class);
 
     private BigDecimal minimumBalance;
+    @Column(precision = 5, scale = 4)
     private BigDecimal interestRate;
     private LocalDateTime referenceDate;
     private boolean penalty;
