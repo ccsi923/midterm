@@ -1,4 +1,4 @@
-package com.ironhack.midterm;
+/*package com.ironhack.midterm;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,4 +9,4 @@ public class Utils {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         System.out.println(passwordEncoder.encode("pepe"));
     }
-}
+}*/
