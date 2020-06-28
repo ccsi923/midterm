@@ -24,8 +24,6 @@ public abstract class Account {
 
     @Embedded
     protected Money balance;
-
-
     @ManyToOne
     @JsonIgnore
     protected AccountHolder primaryOwner;
@@ -33,10 +31,7 @@ public abstract class Account {
     @ManyToOne
     @JsonIgnore
     protected AccountHolder secondaryOwner;
-
     protected BigDecimal penaltyFee;
-
-
 
     public Account(){}
 

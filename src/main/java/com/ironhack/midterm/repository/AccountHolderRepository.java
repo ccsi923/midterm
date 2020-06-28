@@ -13,6 +13,5 @@ import java.util.List;
 @Repository
 public interface AccountHolderRepository extends JpaRepository<AccountHolder, Integer> {
 
-
     public AccountHolder findByAccountUser(User user);
 }

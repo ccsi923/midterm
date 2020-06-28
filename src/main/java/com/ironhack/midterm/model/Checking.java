@@ -49,7 +49,6 @@ public class Checking extends Account {
     public void check(){
 
         int months =  (int) updateDate.until(LocalDateTime.now(), ChronoUnit.MONTHS);
-
         if(months >= 0){
             BigDecimal decreseValue = balance.decreaseAmount(monthlyMaintenanceFee
                     .multiply(new BigDecimal(months)));

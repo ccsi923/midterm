@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @Data
 @Embeddable
@@ -23,6 +24,7 @@ public class Address {
     private String localAddress;
 
     @NotNull
+    @Pattern(regexp="(\\d{5})", message = "Zip code must be numerical")
     private String postalCode;
 
     public Address() {

@@ -7,12 +7,14 @@ import com.ironhack.midterm.model.users.Address;
 import lombok.Data;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 @Data
 public class AccountRequest {
 
     @NotNull
+    @Digits(integer=12, fraction=2)
     private BigDecimal amount;
     @Valid
     private String secretKey;

@@ -33,13 +33,10 @@ public class AccountHolder {
     private Integer id;
     @NotNull
     private String name;
-
     @NotNull
     private LocalDate birth;
-
     @OneToOne
     private AccountUser accountUser;
-
 
     @Valid
     @NotNull

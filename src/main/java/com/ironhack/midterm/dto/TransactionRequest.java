@@ -1,11 +1,13 @@
 package com.ironhack.midterm.dto;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public class TransactionRequest {
 
     @NotNull
+    @Digits(integer=12, fraction=2)
     private BigDecimal amount;
     @NotNull
     private Integer accountId;

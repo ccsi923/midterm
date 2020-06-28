@@ -21,9 +21,7 @@ public class CreditCard extends Account {
 
     private BigDecimal creditLimit;
     private BigDecimal interestRate;
-
     private LocalDateTime updateDate;
-
 
     public CreditCard(){}
 

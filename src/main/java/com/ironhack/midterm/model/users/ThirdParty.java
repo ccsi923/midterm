@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 @Entity
 public class ThirdParty extends User {
 
-
     public ThirdParty() {
     }
 

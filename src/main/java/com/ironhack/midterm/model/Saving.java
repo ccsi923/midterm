@@ -24,7 +24,6 @@ public class Saving extends Account{
 
     private static final Logger LOGGER = LogManager.getLogger(Saving.class);
 
-
     private BigDecimal minimumBalance;
     private BigDecimal interestRate;
     private LocalDateTime referenceDate;
@@ -32,7 +31,6 @@ public class Saving extends Account{
     private String secretKey;
     @Enumerated(value = EnumType.STRING)
     private Status status;
-
 
     public Saving() {
     }
