@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
@@ -65,6 +66,7 @@ public class CheckingService {
         return checkingVMS;
     }
     @Secured({"ROLE_ADMIN"})
+    @Transactional
     public CheckingVM create(Integer primaryId, Integer secondaryId, AccountRequest accountRequest) {
 
         LOGGER.info("[INIT] - create");

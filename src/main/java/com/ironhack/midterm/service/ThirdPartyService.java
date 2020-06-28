@@ -162,7 +162,6 @@ public class ThirdPartyService {
 
             if (checking.getSecretKey().equals(transactionRequest.getSecretKey().trim())) {
 
-
                 if ((checking.isPenalty()) && ((checking.getBalance().getAmount().add(transactionRequest.getAmount())).compareTo(checking.getMinimumBalance()) >= 0)) {
                     checking.getBalance().increaseAmount(transactionRequest.getAmount());
                     checking.setPenalty(false);

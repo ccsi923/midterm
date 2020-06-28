@@ -115,7 +115,7 @@ public class AccountUserService {
             LOGGER.info("[END] - findBalanceByUserAndId");
             return balanceVMS;
         }
-        throw new WrongInput("Not Found");
+        throw new WrongInput("User " + user.getUsername() +" is not the owner");
     }
 
     @Secured({"ROLE_ACCOUNTHOLDER"})

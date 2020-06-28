@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,7 @@ public class CreditCardService {
     }
 
     @Secured({"ROLE_ADMIN"})
+    @Transactional
     public CreditCardVM create(Integer primaryId, Integer secondaryId, AccountRequest accountRequest){
 
         LOGGER.info("[INIT] - create");

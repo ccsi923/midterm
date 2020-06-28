@@ -33,8 +33,8 @@ public class CheckingControllerImpl implements CheckingController {
 
 
     @PostMapping("/checking/")
-    @ApiOperation(value = "Create a checking account",
-            notes = "Creations of checking account",
+    @ApiOperation(value = "Create a checking/student account",
+            notes = "Creations of checking/student account",
             response = CheckingVM.class)
     @ResponseStatus(HttpStatus.CREATED)
     private CheckingVM create(@RequestParam(value = "primary", defaultValue = "-1", required = false) Integer primaryId,

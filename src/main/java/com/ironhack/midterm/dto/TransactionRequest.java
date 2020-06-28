@@ -1,5 +1,6 @@
 package com.ironhack.midterm.dto;
 
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -7,7 +8,8 @@ import java.math.BigDecimal;
 public class TransactionRequest {
 
     @NotNull
-    @Digits(integer=12, fraction=2)
+    @Digits(integer=12, fraction=2, message = "Maximum 12 integer digits and 2 fraction digits")
+    @DecimalMin(value = "0", inclusive = false, message = "Amount must be grater than 0")
     private BigDecimal amount;
     @NotNull
     private Integer accountId;

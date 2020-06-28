@@ -21,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ public class SavingService {
         return savingVMS;
     }
     @Secured({"ROLE_ADMIN"})
+    @Transactional
     public SavingVM create(Integer primaryId, Integer secondaryId, AccountRequest accountRequest){
 
         LOGGER.info("[INIT] - create");

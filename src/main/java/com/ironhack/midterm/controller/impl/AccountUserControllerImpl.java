@@ -34,7 +34,7 @@ public class AccountUserControllerImpl {
 
     @GetMapping("/account/user/balance/{id}")
     @ApiOperation(value = "Find balance by accountuser and id of account",
-            notes = "Balance by accountuser and account id",
+            notes = "Balance by accountuser giving its account id",
             response = BalanceVM.class)
     @ResponseStatus(HttpStatus.OK)
     public BalanceVM findBalanceByAcountId(@AuthenticationPrincipal User user, @PathVariable("id") Integer accountId){
