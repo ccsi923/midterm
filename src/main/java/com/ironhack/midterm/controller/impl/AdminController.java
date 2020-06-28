@@ -1,5 +1,6 @@
 package com.ironhack.midterm.controller.impl;
 
+import com.ironhack.midterm.controller.interfaces.AdminControllerRepo;
 import com.ironhack.midterm.dto.*;
 import com.ironhack.midterm.model.users.ThirdParty;
 import com.ironhack.midterm.model.users.User;
@@ -17,7 +18,7 @@ import java.util.List;
 @Api(tags = "Admin Controller")
 @RestController
 @RequestMapping("/")
-public class AdminController {
+public class AdminController implements AdminControllerRepo {
 
     @Autowired
     private AdminService adminService;

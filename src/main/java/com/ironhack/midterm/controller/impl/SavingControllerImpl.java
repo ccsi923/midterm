@@ -36,7 +36,7 @@ public class SavingControllerImpl implements SavingController {
             notes = "Creation of saving account",
             response = SavingVM.class)
     @ResponseStatus(HttpStatus.CREATED)
-    private SavingVM create(@RequestParam(value = "primary", defaultValue = "-1", required = false) Integer primaryId,
+    public SavingVM create(@RequestParam(value = "primary", defaultValue = "-1", required = false) Integer primaryId,
                             @RequestParam(value = "secondary", defaultValue = "-1", required = false) Integer secondaryId,
                             @RequestBody @Valid AccountRequest accountRequest){
 

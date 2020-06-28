@@ -1,5 +1,6 @@
 package com.ironhack.midterm.controller.impl;
 
+import com.ironhack.midterm.controller.interfaces.AccountUserControllerRepo;
 import com.ironhack.midterm.dto.BalanceVM;
 import com.ironhack.midterm.dto.TransactionAccountUserRequest;
 import com.ironhack.midterm.model.Transaction;
@@ -18,7 +19,7 @@ import java.util.List;
 @Api(tags = "Account User Controller")
 @RestController
 @RequestMapping("/")
-public class AccountUserControllerImpl {
+public class AccountUserControllerImpl implements AccountUserControllerRepo {
 
     @Autowired
     private AccountUserService accountUserService;

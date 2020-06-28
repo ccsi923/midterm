@@ -1,5 +1,6 @@
 package com.ironhack.midterm.controller.impl;
 
+import com.ironhack.midterm.controller.interfaces.ThirdPartyControllerRepo;
 import com.ironhack.midterm.dto.StudentCheckingVM;
 import com.ironhack.midterm.dto.TransactionRequest;
 import com.ironhack.midterm.dto.TransactionThirdPartyRequest;
@@ -19,7 +20,7 @@ import javax.validation.Valid;
 @Api(tags = "Thirdparty Controller")
 @RestController
 @RequestMapping("/")
-public class ThirdPartyController {
+public class ThirdPartyController implements ThirdPartyControllerRepo {
 
     @Autowired
     private ThirdPartyService thirdPartyService;

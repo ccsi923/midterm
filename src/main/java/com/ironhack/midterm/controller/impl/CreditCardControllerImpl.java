@@ -37,7 +37,7 @@ public class CreditCardControllerImpl implements CreditCardController {
             notes = "Creation of creditcard account",
             response = CreditCardVM.class)
     @ResponseStatus(HttpStatus.CREATED)
-    private CreditCardVM create(@RequestParam(value = "primary", defaultValue = "-1", required = false) Integer primaryId,
+    public CreditCardVM create(@RequestParam(value = "primary", defaultValue = "-1", required = false) Integer primaryId,
                                 @RequestParam(value = "secondary", defaultValue = "-1", required = false) Integer secondaryId,
                                 @RequestBody @Valid AccountRequest accountRequest){
 

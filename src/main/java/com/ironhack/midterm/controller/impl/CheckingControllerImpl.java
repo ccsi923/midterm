@@ -37,7 +37,7 @@ public class CheckingControllerImpl implements CheckingController {
             notes = "Creations of checking/student account",
             response = CheckingVM.class)
     @ResponseStatus(HttpStatus.CREATED)
-    private CheckingVM create(@RequestParam(value = "primary", defaultValue = "-1", required = false) Integer primaryId,
+    public CheckingVM create(@RequestParam(value = "primary", defaultValue = "-1", required = false) Integer primaryId,
                               @RequestParam(value = "secondary", defaultValue = "-1", required = false) Integer secondaryId,
                               @RequestBody @Valid AccountRequest accountRequest){
 
