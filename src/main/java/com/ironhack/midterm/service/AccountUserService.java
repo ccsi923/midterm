@@ -354,8 +354,6 @@ public class AccountUserService {
         BigDecimal highestTransaction = transactionRepository.highestTransaction(LocalDateTime.now(),transfer.getOwnAccountId());
         LocalDateTime lastTransaction = transactionRepository.findByLastTransaction(transfer.getOwnAccountId());
         BigDecimal senderTransaction = transactionRepository.highestTransactionOwner(LocalDateTime.now(), transfer.getOwnAccountId());
-        System.out.println(highestTransaction);
-        System.out.println(senderTransaction);
 
         if(senderTransaction == null){
             senderTransaction = new BigDecimal("0");
