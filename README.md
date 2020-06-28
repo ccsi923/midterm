@@ -136,6 +136,8 @@ INSERT INTO role (role, user_id) values
 
 - Admin is the only one who can remove Frozen status.
 
+- First day of transactions you can do all amount you want. Detection of fraud will work since next day, is you want to proove it try to change de dates into transaction table.
+
 
 ## Interpretation: 
 
